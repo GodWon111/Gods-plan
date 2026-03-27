@@ -3,143 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOD'S PLAN | Divine Trading</title>
+    <title>GOD'S PLAN | Pro Trading Command</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-        
         :root {
-            --void: #050508;
-            --void-light: #0a0a12;
-            --glass: rgba(20, 20, 35, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --divine-gold: #ffd700;
-            --divine-gold-soft: rgba(255, 215, 0, 0.15);
-            --neon-cyan: #00f5ff;
-            --neon-purple: #b026ff;
-            --neon-pink: #ff00aa;
-            --neon-blue: #0066ff;
-            --success: #00ff88;
-            --danger: #ff3366;
-            --warning: #ffaa00;
-            --text: #e8e8f0;
-            --text-dim: #6b6b80;
-            --glow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
-            --glow-cyan: 0 0 20px rgba(0, 245, 255, 0.2);
+            --gold: #D4AF37;
+            --gold-light: #F4E8C1;
+            --dark: #0a0a0a;
+            --darker: #050505;
+            --panel: #111111;
+            --panel-light: #1a1a1a;
+            --success: #00d084;
+            --danger: #ff4757;
+            --danger-dark: #c0392b;
+            --warning: #f39c12;
+            --text: #e0e0e0;
+            --text-dim: #666666;
+            --info: #3498db;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background: radial-gradient(ellipse at top, #1a1a2e 0%, var(--void) 50%, #000 100%);
+            background: var(--darker);
             color: var(--text);
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
-            position: relative;
         }
 
-        /* Cosmic Background Animation */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
-                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
-                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.2), transparent);
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            opacity: 0.3;
-            z-index: -1;
-            animation: twinkle 10s linear infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Intro Animation */
+        /* Intro */
         #intro {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a1a3e 0%, #000 100%);
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1s ease-out, visibility 1s;
         }
 
         #intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         .divine-text {
-            font-size: 3rem;
-            font-weight: 200;
-            letter-spacing: 0.8em;
-            background: linear-gradient(135deg, var(--divine-gold), var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            font-weight: 100;
+            letter-spacing: 0.5em;
+            color: var(--gold);
             text-transform: uppercase;
             opacity: 0;
-            animation: divineAppear 2.5s ease-out forwards;
+            transform: scale(0.8);
+            animation: divineAppear 2s ease-out forwards;
             text-align: center;
-            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
         }
 
-        .divine-text span { 
-            display: block; 
-            font-size: 0.35em; 
-            letter-spacing: 1.2em; 
-            margin-top: 1.5rem; 
-            color: var(--text-dim);
-            -webkit-text-fill-color: var(--text-dim);
-            font-weight: 300;
-        }
+        .divine-text span { display: block; font-size: 0.4em; letter-spacing: 1em; margin-top: 1rem; color: var(--text-dim); }
+        @keyframes divineAppear { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        @keyframes divineAppear {
-            0% { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-        }
+        .loading-bar { width: 200px; height: 2px; background: rgba(212, 175, 55, 0.2); margin-top: 3rem; position: relative; overflow: hidden; }
+        .loading-progress { position: absolute; left: 0; top: 0; height: 100%; background: var(--gold); width: 0%; animation: loadDivine 2.5s ease-out forwards; box-shadow: 0 0 20px var(--gold); }
+        @keyframes loadDivine { 0% { width: 0%; } 100% { width: 100%; } }
 
-        .loading-container { margin-top: 4rem; position: relative; }
-        
-        .loading-ring {
-            width: 60px;
-            height: 60px;
-            border: 2px solid transparent;
-            border-top-color: var(--divine-gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .loading-inner {
-            position: absolute;
-            top: 10px; left: 10px;
-            width: 40px; height: 40px;
-            border: 2px solid transparent;
-            border-top-color: var(--neon-cyan);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite reverse;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Main App */
         #app { display: none; padding-bottom: 100px; }
-        #app.active { display: block; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #app.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Header */
         .header {
-            background: linear-gradient(180deg, rgba(10,10,20,0.9) 0%, transparent 100%);
+            background: linear-gradient(180deg, var(--panel) 0%, rgba(17,17,17,0.8) 100%);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            padding: 1rem;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -153,434 +88,224 @@
             margin: 0 auto;
         }
 
-        .brand { 
-            font-size: 1.3rem; 
-            font-weight: 300; 
-            letter-spacing: 0.3em; 
-            background: linear-gradient(135deg, var(--divine-gold), #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
-
+        .brand { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2em; color: var(--gold); }
+        
         .balance-pill {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
+            background: rgba(0, 208, 132, 0.1);
+            border: 1px solid rgba(0, 208, 132, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
             color: var(--success);
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Courier New', monospace;
             font-weight: 600;
-            box-shadow: var(--glow-cyan);
-            position: relative;
-            overflow: hidden;
         }
 
-        .balance-pill::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer { 100% { left: 100%; } }
-
-        /* Navigation */
         .nav-tabs {
             display: flex;
             justify-content: center;
-            gap: 0.8rem;
-            padding: 1.2rem;
-            margin: 0 1rem;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+            backdrop-filter: blur(10px);
         }
 
         .nav-tab {
             flex: 1;
             max-width: 120px;
-            padding: 0.9rem 0.5rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+            padding: 0.8rem 0.5rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-dim);
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 0.8rem;
             font-weight: 500;
-            letter-spacing: 0.05em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             text-align: center;
             position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
-        .nav-tab::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .nav-tab:hover::before { opacity: 1; }
-        
-        .nav-tab.active { 
-            background: linear-gradient(135deg, rgba(176, 38, 255, 0.2), rgba(0, 245, 255, 0.1));
-            border-color: rgba(176, 38, 255, 0.5);
-            color: #fff;
-            box-shadow: 0 0 30px rgba(176, 38, 255, 0.3);
-        }
-
-        .badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: #fff;
-            font-size: 0.65rem;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-weight: 700;
-            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
-        }
+        .nav-tab.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; min-width: 18px; }
 
         .section { display: none; padding: 1rem; max-width: 600px; margin: 0 auto; }
-        .section.active { display: block; animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .section.active { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Signal Cards - Glassmorphism */
+        /* Signal Cards */
         .signal-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 1.8rem;
-            margin-bottom: 1.2rem;
+            background: var(--panel);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
             position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .signal-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        }
-
-        .signal-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--glow-gold);
         }
 
         .signal-card.best {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), var(--glass));
-            border-color: rgba(255, 215, 0, 0.4);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), var(--panel));
+            box-shadow: 0 0 30px rgba(212,175,55,0.1);
         }
 
         .signal-card.best::before {
-            content: 'DIVINE';
+            content: 'DIVINE SIGNAL';
             position: absolute;
             top: 0; right: 0;
-            background: linear-gradient(135deg, var(--divine-gold), #ffaa00);
-            color: #000;
+            background: var(--gold);
+            color: var(--dark);
             font-size: 0.65rem;
             font-weight: 800;
-            letter-spacing: 0.3em;
-            padding: 0.5rem 1.2rem;
-            border-bottom-left-radius: 16px;
-            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            padding: 0.4rem 1rem;
+            border-bottom-left-radius: 12px;
         }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .coin-pair { font-size: 1.5rem; font-weight: 700; color: white; }
         
-        .coin-pair { 
-            font-size: 1.6rem; 
-            font-weight: 700; 
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: -0.02em;
-            text-shadow: 0 0 20px rgba(255,255,255,0.1);
-        }
-
         .signal-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            border: 1px solid;
-            backdrop-filter: blur(10px);
         }
 
-        .signal-long { 
-            background: rgba(0, 255, 136, 0.1); 
-            color: var(--success); 
-            border-color: rgba(0, 255, 136, 0.4);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
-        }
+        .signal-long { background: rgba(0, 208, 132, 0.15); color: var(--success); border: 1px solid rgba(0, 208, 132, 0.3); }
+        .signal-short { background: rgba(255, 71, 87, 0.15); color: var(--danger); border: 1px solid rgba(255, 71, 87, 0.3); }
 
-        .signal-short { 
-            background: rgba(255, 51, 102, 0.1); 
-            color: var(--danger); 
-            border-color: rgba(255, 51, 102, 0.4);
-            box-shadow: 0 0 15px rgba(255, 51, 102, 0.1);
-        }
+        .price-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+        .price { font-size: 1.8rem; font-weight: 300; font-family: 'Courier New', monospace; color: white; }
+        .change { font-size: 0.85rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; }
+        .positive { color: var(--success); background: rgba(0,208,132,0.1); }
+        .negative { color: var(--danger); background: rgba(255,71,87,0.1); }
 
-        .price-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: baseline; 
-            margin-bottom: 0.8rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .price { 
-            font-size: 2.2rem; 
-            font-weight: 300; 
-            font-family: 'JetBrains Mono', monospace; 
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-            letter-spacing: -0.02em;
-        }
-
-        .change { 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            padding: 0.4rem 0.8rem; 
-            border-radius: 50px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .positive { 
-            color: var(--success); 
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-        }
-
-        .negative { 
-            color: var(--danger); 
-            background: rgba(255, 51, 102, 0.1);
-            border: 1px solid rgba(255, 51, 102, 0.2);
-        }
-
-        .confidence-row { 
-            display: flex; 
-            align-items: center; 
-            gap: 1rem; 
-            margin-bottom: 1.2rem; 
-            font-size: 0.85rem; 
-            color: var(--text-dim); 
-        }
-
-        .confidence-bar { 
-            flex: 1; 
-            height: 6px; 
-            background: rgba(255,255,255,0.05); 
-            border-radius: 10px; 
-            overflow: hidden;
-            position: relative;
-        }
-
-        .confidence-fill { 
-            height: 100%; 
-            background: linear-gradient(90deg, var(--neon-purple), var(--divine-gold));
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
-            transition: width 1s ease;
-        }
+        .confidence-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-dim); }
+        .confidence-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .confidence-fill { height: 100%; background: var(--gold); border-radius: 2px; }
 
         /* Info Button */
         .info-btn {
             position: absolute;
-            top: 1.8rem;
-            right: 1.8rem;
-            width: 36px;
-            height: 36px;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(0, 245, 255, 0.1);
-            border: 1px solid rgba(0, 245, 255, 0.3);
-            color: var(--neon-cyan);
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid var(--info);
+            color: var(--info);
             font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             z-index: 10;
-            backdrop-filter: blur(10px);
         }
 
-        .info-btn:hover { 
-            background: rgba(0, 245, 255, 0.2); 
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
-        }
+        .info-btn:hover { background: var(--info); color: white; transform: scale(1.1); }
 
         /* Leverage Section */
-        .leverage-section { 
-            margin-top: 1.5rem; 
-            padding-top: 1.5rem; 
-            border-top: 1px solid var(--glass-border);
-        }
-
-        .section-label { 
-            font-size: 0.75rem; 
-            color: var(--text-dim); 
-            text-transform: uppercase; 
-            letter-spacing: 0.2em; 
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .lev-scroller { 
-            display: flex; 
-            gap: 0.6rem; 
-            overflow-x: auto; 
-            padding-bottom: 0.5rem;
-            scrollbar-width: none;
-        }
-
+        .leverage-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+        .section-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+        
+        .lev-scroller { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none; }
         .lev-scroller::-webkit-scrollbar { display: none; }
 
         .lev-btn {
             flex-shrink: 0;
-            min-width: 50px;
-            padding: 0.8rem 1rem;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
+            min-width: 48px;
+            padding: 0.7rem 0.9rem;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-dim);
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
         }
 
-        .lev-btn:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.2);
+        .lev-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); transform: scale(1.05); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+        .lev-btn.danger { border-color: var(--danger); color: var(--danger); }
+
+        .risk-meter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
         }
 
-        .lev-btn.active { 
-            background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); 
-            color: #fff; 
-            border-color: transparent;
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .lev-btn.danger { 
-            border-color: rgba(255, 51, 102, 0.3);
-            color: var(--danger);
-        }
-
-        .lev-btn.danger.active {
-            background: linear-gradient(135deg, var(--danger), #ff0066);
-        }
+        .risk-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .risk-fill { height: 100%; background: var(--success); border-radius: 2px; transition: all 0.3s; }
+        .risk-fill.medium { background: var(--warning); }
+        .risk-fill.high { background: var(--danger); }
 
         .profit-section {
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(0, 255, 136, 0.02));
-            border: 1px solid rgba(0, 255, 136, 0.15);
-            border-radius: 16px;
-            padding: 1.2rem;
-            margin-top: 1.2rem;
+            background: linear-gradient(135deg, rgba(0,208,132,0.08), rgba(0,208,132,0.02));
+            border: 1px solid rgba(0,208,132,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
         }
 
-        .profit-label { 
-            font-size: 0.8rem; 
-            color: var(--text-dim); 
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .profit-amount { 
-            font-size: 1.8rem; 
-            color: var(--success); 
-            font-weight: 700; 
-            font-family: 'JetBrains Mono', monospace;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-        }
+        .profit-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
+        .profit-amount { font-size: 1.5rem; color: var(--success); font-weight: 700; font-family: 'Courier New', monospace; }
 
         .enter-btn {
             width: 100%;
-            margin-top: 1.2rem;
-            padding: 1.2rem;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 170, 0, 0.9));
+            margin-top: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(212,175,55,0.9), rgba(212,175,55,0.7));
             border: none;
-            color: #000;
-            border-radius: 16px;
+            color: var(--dark);
+            border-radius: 12px;
             font-size: 0.95rem;
             font-weight: 700;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.2);
         }
 
-        .enter-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s;
-        }
+        .enter-btn:active { transform: scale(0.98); }
+        .enter-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .enter-btn:hover::before { left: 100%; }
-        .enter-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4); }
-        .enter-btn:active { transform: translateY(0); }
-
-        /* Position Cards */
+        /* Positions Tab - Enhanced */
         .position-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 1.8rem;
-            margin-bottom: 1.2rem;
-            border-left: 4px solid var(--divine-gold);
+            background: var(--panel);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--gold);
             position: relative;
-            overflow: hidden;
         }
 
-        .position-card.danger { 
-            border-left-color: var(--danger);
-            animation: pulseDanger 2s infinite;
-            box-shadow: 0 0 30px rgba(255, 51, 102, 0.2);
-        }
-
-        @keyframes pulseDanger { 
-            0%, 100% { box-shadow: 0 0 0 rgba(255, 51, 102, 0); } 
-            50% { box-shadow: 0 0 30px rgba(255, 51, 102, 0.3); } 
-        }
+        .position-card.danger { border-left-color: var(--danger); animation: pulseDanger 2s infinite; }
+        @keyframes pulseDanger { 0%, 100% { box-shadow: 0 0 0 rgba(255,71,87,0); } 50% { box-shadow: 0 0 20px rgba(255,71,87,0.3); } }
 
         .live-indicator {
             position: absolute;
-            top: 1.8rem;
-            right: 1.8rem;
+            top: 1.5rem;
+            right: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            font-size: 0.75rem;
+            gap: 0.5rem;
+            font-size: 0.7rem;
             color: var(--success);
-            font-weight: 500;
-            letter-spacing: 0.1em;
         }
 
         .live-dot {
@@ -588,106 +313,102 @@
             height: 8px;
             background: var(--success);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--success);
-            animation: pulse 2s infinite;
+            animation: pulse 1s infinite;
         }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         .pnl-display {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Courier New', monospace;
             text-align: center;
-            margin: 1.2rem 0;
-            padding: 1.2rem;
+            margin: 1rem 0;
+            padding: 1rem;
             background: rgba(0,0,0,0.3);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
+            border-radius: 12px;
         }
 
-        .pnl-positive { 
-            color: var(--success); 
-            text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
-            border-color: rgba(0, 255, 136, 0.3);
-        }
+        .pnl-positive { color: var(--success); text-shadow: 0 0 20px rgba(0,208,132,0.3); }
+        .pnl-negative { color: var(--danger); text-shadow: 0 0 20px rgba(255,71,87,0.3); }
 
-        .pnl-negative { 
-            color: var(--danger); 
-            text-shadow: 0 0 30px rgba(255, 51, 102, 0.4);
-            border-color: rgba(255, 51, 102, 0.3);
-        }
-
-        .liq-panel {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.2rem;
-            margin: 1.2rem 0;
+        .liq-warning {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 1rem 0;
             text-align: center;
+            font-size: 0.85rem;
         }
 
-        .liq-label {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-        }
+        .liq-safe { background: rgba(0, 208, 132, 0.1); border-color: var(--success); color: var(--success); }
 
         .liq-price {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.4rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--danger);
-            text-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+            margin-top: 0.3rem;
         }
-
-        .liq-safe { color: var(--success); text-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
 
         .position-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.2rem 0;
+            gap: 0.8rem;
+            margin: 1rem 0;
         }
 
         .position-stat {
             background: rgba(0,0,0,0.3);
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
         }
 
         .position-stat.full { grid-column: 1 / -1; }
 
-        .stat-label { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
-        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: #fff; }
+        .stat-label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.2rem; }
+        .stat-value { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 600; color: white; }
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.success { color: var(--success); }
+
+        .margin-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .margin-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 2px;
+            transition: width 0.3s, background 0.3s;
+        }
 
         .close-btn {
             width: 100%;
-            padding: 1.2rem;
-            background: rgba(255, 51, 102, 0.1);
-            border: 1px solid rgba(255, 51, 102, 0.3);
+            padding: 1rem;
+            background: rgba(255,71,87,0.1);
+            border: 2px solid var(--danger);
             color: var(--danger);
-            border-radius: 16px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
         }
 
-        .close-btn:hover { background: rgba(255, 51, 102, 0.2); box-shadow: 0 0 20px rgba(255, 51, 102, 0.2); }
+        .close-btn:active { background: rgba(255,71,87,0.2); transform: scale(0.98); }
 
-        /* Modal */
+        /* Trading Plan Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -697,135 +418,142 @@
         .modal-overlay.active { display: flex; }
 
         .plan-modal {
-            background: linear-gradient(135deg, rgba(20,20,35,0.95), rgba(10,10,20,0.98));
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 24px;
+            background: var(--panel);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 20px;
             width: 100%;
             max-width: 450px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.1);
         }
 
         .plan-header {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent);
-            padding: 1.8rem;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05));
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(212,175,55,0.2);
             position: relative;
         }
 
-        .plan-title { 
-            font-size: 1.4rem; 
-            color: var(--divine-gold); 
-            font-weight: 700;
-            letter-spacing: 0.1em;
+        .plan-title { font-size: 1.3rem; color: var(--gold); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .plan-subtitle { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.3rem; }
+
+        .copy-all-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 3rem;
+            background: rgba(0,208,132,0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .plan-subtitle { color: var(--text-dim); font-size: 0.9rem; margin-top: 0.5rem; }
+        .copy-all-btn:active { transform: scale(0.95); background: var(--success); color: var(--dark); }
 
         .close-modal {
             position: absolute;
             top: 1.5rem;
-            right: 1.5rem;
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.1);
+            border: none;
             color: var(--text);
             border-radius: 50%;
             cursor: pointer;
-            font-size: 1.3rem;
-            transition: all 0.3s;
+            font-size: 1.2rem;
         }
 
-        .close-modal:hover { background: rgba(255,255,255,0.1); transform: rotate(90deg); }
-
-        .plan-body { padding: 1.8rem; }
+        .plan-body { padding: 1.5rem; }
 
         .plan-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
-            background: rgba(0,0,0,0.4);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
             border-left: 3px solid transparent;
-            transition: all 0.3s;
+            position: relative;
         }
 
-        .plan-row:hover { border-color: rgba(255,255,255,0.2); transform: translateX(5px); }
+        .copy-btn {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--text-dim);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s;
+        }
 
-        .plan-row.entry { border-left-color: var(--neon-cyan); }
-        .plan-row.tp { border-left-color: var(--success); background: rgba(0, 255, 136, 0.05); }
-        .plan-row.sl { border-left-color: var(--danger); background: rgba(255, 51, 102, 0.05); }
-        .plan-row.liq { border-left-color: #ff0066; background: rgba(255, 0, 102, 0.05); }
+        .plan-row:hover .copy-btn { opacity: 1; }
+        .copy-btn:active { background: var(--gold); color: var(--dark); }
 
-        .plan-label { font-size: 0.85rem; color: var(--text-dim); }
-        .plan-label div:first-child { font-weight: 600; color: #fff; margin-bottom: 0.3rem; font-size: 1rem; }
-        .plan-value { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; }
+        .plan-row.entry { border-left-color: var(--info); }
+        .plan-row.tp { border-left-color: var(--success); background: rgba(0,208,132,0.05); }
+        .plan-row.sl { border-left-color: var(--danger); background: rgba(255,71,87,0.05); }
+        .plan-row.liq { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.05); }
+
+        .plan-label { font-size: 0.8rem; color: var(--text-dim); }
+        .plan-label div:first-child { font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+        .plan-value { font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: 700; text-align: right; padding-right: 3rem; }
         .plan-value.tp { color: var(--success); }
         .plan-value.sl { color: var(--danger); }
-        .plan-value.liq { color: #ff0066; }
+        .plan-value.liq { color: #e74c3c; }
 
         .plan-footer {
-            padding: 1.2rem 1.8rem;
-            border-top: 1px solid var(--glass-border);
-            font-size: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.75rem;
             color: var(--text-dim);
             text-align: center;
-            background: rgba(0,0,0,0.3);
         }
 
         .plan-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .plan-stat { 
-            text-align: center; 
-            padding: 1rem; 
-            background: rgba(0,0,0,0.4); 
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-        }
-        .plan-stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-        .plan-stat-value { font-size: 1.1rem; font-weight: 700; color: var(--divine-gold); font-family: 'JetBrains Mono', monospace; }
+        .plan-stat { text-align: center; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 10px; }
+        .plan-stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.3rem; }
+        .plan-stat-value { font-size: 1rem; font-weight: 700; color: var(--gold); }
 
-        .confirm-modal { max-width: 380px; text-align: center; }
-        .confirm-title { 
-            font-size: 1.5rem; 
-            color: var(--divine-gold); 
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-        }
-        .confirm-text { color: var(--text-dim); margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem; }
+        /* Confirmation Modal */
+        .confirm-modal { max-width: 350px; text-align: center; }
+        .confirm-title { font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; }
+        .confirm-text { color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.5; }
         .confirm-buttons { display: flex; gap: 1rem; }
-        .confirm-btn { flex: 1; padding: 1rem; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; }
-        .confirm-yes { background: var(--success); color: #000; box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3); }
-        .confirm-yes:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0, 255, 136, 0.4); }
-        .confirm-no { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--glass-border); }
-        .confirm-no:hover { background: rgba(255,255,255,0.1); }
+        .confirm-btn { flex: 1; padding: 1rem; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .confirm-yes { background: var(--success); color: var(--dark); }
+        .confirm-no { background: rgba(255,255,255,0.1); color: var(--text); }
 
-        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-dim); }
+        /* Empty States */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); }
         .toast {
             position: fixed;
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--glass);
-            border: 1px solid var(--divine-gold);
-            color: var(--divine-gold);
+            background: var(--panel);
+            border: 1px solid var(--gold);
+            color: var(--gold);
             padding: 1rem 2rem;
-            border-radius: 50px;
+            border-radius: 30px;
             font-size: 0.9rem;
             z-index: 2000;
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.success { border-color: var(--success); color: var(--success); box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0, 255, 136, 0.2); }
-        .toast.error { border-color: var(--danger); color: var(--danger); box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255, 51, 102, 0.2); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
     </style>
 </head>
 <body>
@@ -833,11 +561,10 @@
     <div id="intro">
         <div class="divine-text">
             GOD'S PLAN
-            <span>Divine Trading Interface</span>
+            <span>Pro Trading Command</span>
         </div>
-        <div class="loading-container">
-            <div class="loading-ring"></div>
-            <div class="loading-inner"></div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
         </div>
     </div>
 
@@ -864,9 +591,8 @@
         <div class="section" id="tradesSection">
             <div id="openTradesList">
                 <div class="empty-state">
-                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">◈</div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
                     <div>No active positions</div>
-                    <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.6;">Select a signal to begin</div>
                 </div>
             </div>
         </div>
@@ -874,7 +600,7 @@
         <div class="section" id="historySection">
             <div id="historyList">
                 <div class="empty-state">
-                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">◈</div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
                     <div>No trade history</div>
                 </div>
             </div>
@@ -885,7 +611,8 @@
     <div class="modal-overlay" id="planModal" onclick="if(event.target === this) closePlanModal()">
         <div class="plan-modal">
             <div class="plan-header">
-                <div class="plan-title">TRADING PLAN</div>
+                <button class="copy-all-btn" onclick="copyAllPrices()">📋 Copy All</button>
+                <div class="plan-title">📋 Trading Plan</div>
                 <div class="plan-subtitle" id="planSubtitle">BTC/USDT • LONG • 3x</div>
                 <button class="close-modal" onclick="closePlanModal()">×</button>
             </div>
@@ -893,54 +620,68 @@
             <div class="plan-body">
                 <div class="plan-stats">
                     <div class="plan-stat">
-                        <div class="plan-stat-label">R:R</div>
+                        <div class="plan-stat-label">Risk/Reward</div>
                         <div class="plan-stat-value" id="planRR">1:2.5</div>
                     </div>
                     <div class="plan-stat">
-                        <div class="plan-stat-label">Risk</div>
-                        <div class="plan-stat-value" id="planRisk">$0.30</div>
+                        <div class="plan-stat-label">Risk Amount</div>
+                        <div class="plan-stat-value" id="planRisk">$3</div>
                     </div>
                     <div class="plan-stat">
-                        <div class="plan-stat-label">Size</div>
-                        <div class="plan-stat-value" id="planSize">$10</div>
+                        <div class="plan-stat-label">Leverage</div>
+                        <div class="plan-stat-value" id="planLev">3x</div>
                     </div>
                 </div>
 
                 <div class="plan-row entry">
                     <div class="plan-label">
-                        <div>Entry</div>
-                        <div>Market Order</div>
+                        <div>Entry Price</div>
+                        <div>Market Order Now</div>
                     </div>
                     <div class="plan-value" id="planEntry">$67,234.00</div>
+                    <button class="copy-btn" onclick="copyPrice('entry')">COPY</button>
                 </div>
 
                 <div class="plan-row tp">
                     <div class="plan-label">
                         <div>Take Profit</div>
-                        <div>Limit Order</div>
+                        <div>Limit Order (GTC)</div>
                     </div>
                     <div class="plan-value tp" id="planTP">$67,435.20</div>
+                    <button class="copy-btn" onclick="copyPrice('tp')">COPY</button>
                 </div>
 
                 <div class="plan-row sl">
                     <div class="plan-label">
                         <div>Stop Loss</div>
-                        <div>Stop Market</div>
+                        <div>Stop Market Order</div>
                     </div>
                     <div class="plan-value sl" id="planSL">$67,032.30</div>
+                    <button class="copy-btn" onclick="copyPrice('sl')">COPY</button>
                 </div>
 
                 <div class="plan-row liq">
                     <div class="plan-label">
-                        <div>Liquidation</div>
-                        <div>⚠️ Critical Level</div>
+                        <div>Liquidation Price</div>
+                        <div>⚠️ Never let price reach here</div>
                     </div>
                     <div class="plan-value liq" id="planLiq">$50,425.50</div>
+                    <button class="copy-btn" onclick="copyPrice('liq')">COPY</button>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem; font-size: 0.8rem; color: var(--text-dim);">
+                    <strong style="color: var(--gold);">Instructions:</strong><br>
+                    1. Open <span id="exchangeName">Binance</span> Futures<br>
+                    2. Set leverage to <span id="instrLev">3</span>x<br>
+                    3. Enter at market: <span id="instrEntry" style="color: white;">$67,234</span><br>
+                    4. Set TP: <span id="instrTP" style="color: var(--success);">$67,435</span><br>
+                    5. Set SL: <span id="instrSL" style="color: var(--danger);">$67,032</span><br>
+                    6. Position size: <span style="color: white;">$10</span>
                 </div>
             </div>
 
             <div class="plan-footer">
-                Execute on your exchange • Godspeed
+                Double-check all prices before executing • Godspeed
             </div>
         </div>
     </div>
@@ -949,11 +690,11 @@
     <div class="modal-overlay" id="confirmModal">
         <div class="plan-modal confirm-modal">
             <div class="plan-body">
-                <div class="confirm-title">◈ Confirm</div>
+                <div class="confirm-title">⚠️ Confirm Trade</div>
                 <div class="confirm-text" id="confirmText">
-                    LONG BTC @ 3x<br><br>
-                    Risk: $0.30<br>
-                    Profit: $0.75
+                    You are about to enter a LONG position on BTC at 3x leverage.<br><br>
+                    Risk: $3 (0.3%)<br>
+                    Potential Profit: $7.50
                 </div>
                 <div class="confirm-buttons">
                     <button class="confirm-btn confirm-no" onclick="closeConfirmModal()">Cancel</button>
@@ -966,13 +707,16 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Configuration
+        // Pro Trading Configuration
         const CONFIG = {
-            defaultPositionSize: 10,
-            tpPercent: 0.75,
-            slPercent: 0.3,
-            maintenanceMargin: 0.005,
-            safeLeverage: 3
+            maxRiskPercent: 0.3,        // 0.3% risk per trade (ultra-conservative)
+            defaultPositionSize: 10,     // $10 per trade
+            tpPercent: 0.75,             // 0.75% take profit
+            slPercent: 0.3,              // 0.3% stop loss (tight)
+            maintenanceMargin: 0.005,    // 0.5% maintenance
+            maxLeverage: 10,
+            safeLeverage: 3,             // Default safe leverage
+            updateInterval: 1000         // 1 second updates
         };
 
         const state = {
@@ -982,9 +726,12 @@
             prices: {},
             signals: [],
             selectedLeverage: {},
+            lastUpdate: Date.now(),
+            updateInterval: null,
             pendingTrade: null
         };
 
+        // Extended coin mapping with 20+ high-volatility scalping pairs
         const COINS = {
             'BTC': { id: 'bitcoin', volatility: 0.8, minMove: 0.4 },
             'ETH': { id: 'ethereum', volatility: 1.0, minMove: 0.5 },
@@ -993,417 +740,4 @@
             'XRP': { id: 'ripple', volatility: 1.2, minMove: 0.6 },
             'DOGE': { id: 'dogecoin', volatility: 2.0, minMove: 1.0 },
             'ADA': { id: 'cardano', volatility: 1.3, minMove: 0.7 },
-            'AVAX': { id: 'avalanche-2', volatility: 1.8, minMove: 0.9 },
-            'DOT': { id: 'polkadot', volatility: 1.4, minMove: 0.7 },
-            'MATIC': { id: 'matic-network', volatility: 1.6, minMove: 0.8 },
-            'LINK': { id: 'chainlink', volatility: 1.3, minMove: 0.7 },
-            'UNI': { id: 'uniswap', volatility: 1.5, minMove: 0.8 },
-            'ATOM': { id: 'cosmos', volatility: 1.4, minMove: 0.7 },
-            'ETC': { id: 'ethereum-classic', volatility: 1.7, minMove: 0.9 },
-            'XLM': { id: 'stellar', volatility: 1.3, minMove: 0.7 },
-            'ALGO': { id: 'algorand', volatility: 1.5, minMove: 0.8 },
-            'VET': { id: 'vechain', volatility: 1.6, minMove: 0.8 },
-            'FIL': { id: 'filecoin', volatility: 1.8, minMove: 0.9 },
-            'TRX': { id: 'tron', volatility: 1.2, minMove: 0.6 },
-            'NEAR': { id: 'near', volatility: 1.7, minMove: 0.9 }
-        };
-
-        window.onload = function() {
-            loadData();
-            setTimeout(() => {
-                document.getElementById('intro').classList.add('hidden');
-                document.getElementById('app').classList.add('active');
-                initApp();
-            }, 2500);
-            window.addEventListener('beforeunload', saveData);
-        };
-
-        function initApp() {
-            fetchPrices();
-            setInterval(fetchPrices, 3000);
-            setInterval(() => {
-                if (state.trades.length > 0) updatePositionsRealTime();
-            }, 1000);
-        }
-
-        function saveData() {
-            localStorage.setItem('divine_trader', JSON.stringify({
-                balance: state.balance,
-                trades: state.trades,
-                history: state.history
-            }));
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('divine_trader');
-            if (saved) {
-                const data = JSON.parse(saved);
-                state.balance = data.balance || 10000;
-                state.trades = data.trades || [];
-                state.history = data.history || [];
-            }
-        }
-
-        async function fetchPrices() {
-            try {
-                const ids = Object.values(COINS).map(c => c.id).join(',');
-                const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
-                const data = await res.json();
-                
-                Object.keys(COINS).forEach(coin => {
-                    const coinData = data[COINS[coin].id];
-                    if (coinData) {
-                        state.prices[coin] = {
-                            price: coinData.usd,
-                            change: coinData.usd_24h_change
-                        };
-                    }
-                });
-                generateSignals();
-            } catch (e) {
-                Object.keys(COINS).forEach(coin => {
-                    if (!state.prices[coin]) state.prices[coin] = { price: 100, change: 0 };
-                    state.prices[coin].price *= (1 + (Math.random() - 0.5) * 0.001);
-                });
-                generateSignals();
-            }
-        }
-
-        function generateSignals() {
-            const signals = [];
-            Object.keys(state.prices).forEach(coin => {
-                const data = state.prices[coin];
-                const cfg = COINS[coin];
-                let signal, strength;
-                
-                if (data.change > cfg.volatility) {
-                    signal = 'SHORT';
-                    strength = Math.min(60 + data.change * 3, 95);
-                } else if (data.change < -cfg.volatility) {
-                    signal = 'LONG';
-                    strength = Math.min(60 + Math.abs(data.change) * 3, 95);
-                } else {
-                    signal = data.change > 0 ? 'SHORT' : 'LONG';
-                    strength = 50 + Math.abs(data.change) * 2;
-                }
-                
-                signals.push({
-                    coin, price: data.price, change: data.change,
-                    signal, strength: Math.floor(strength),
-                    expectedMove: cfg.minMove
-                });
-            });
-            signals.sort((a, b) => b.strength - a.strength);
-            state.signals = signals;
-            renderSignals();
-        }
-
-        function formatPrice(price) {
-            if (price < 0.01) return price.toFixed(6);
-            if (price < 1) return price.toFixed(4);
-            if (price < 100) return price.toFixed(2);
-            return price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
-
-        function renderSignals() {
-            const container = document.getElementById('signalsList');
-            container.innerHTML = state.signals.map((sig, index) => {
-                const isBest = index === 0;
-                const lev = state.selectedLeverage[sig.coin] || CONFIG.safeLeverage;
-                const profit = (CONFIG.defaultPositionSize * lev * sig.expectedMove / 100).toFixed(2);
-                
-                return `
-                    <div class="signal-card ${isBest ? 'best' : ''}">
-                        <div class="info-btn" onclick="showTradingPlan('${sig.coin}', '${sig.signal}', ${sig.price}, ${lev})">ℹ</div>
-                        
-                        <div class="card-header">
-                            <div class="coin-pair">${sig.coin}</div>
-                            <div class="signal-badge ${sig.signal === 'LONG' ? 'signal-long' : 'signal-short'}">
-                                ${sig.signal}
-                            </div>
-                        </div>
-                        
-                        <div class="price-row">
-                            <div class="price">$${formatPrice(sig.price)}</div>
-                            <div class="change ${sig.change >= 0 ? 'positive' : 'negative'}">
-                                ${sig.change >= 0 ? '+' : ''}${sig.change.toFixed(2)}%
-                            </div>
-                        </div>
-                        
-                        <div class="confidence-row">
-                            <span>Confidence</span>
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: ${sig.strength}%"></div>
-                            </div>
-                            <span style="color: var(--divine-gold); font-weight: 600;">${sig.strength}%</span>
-                        </div>
-
-                        <div class="leverage-section">
-                            <div class="lev-scroller">
-                                ${[1,2,3,4,5,6,7,8,9,10].map(l => `
-                                    <button class="lev-btn ${l === lev ? 'active' : ''} ${l > 7 ? 'danger' : ''}" 
-                                            onclick="selectLeverage('${sig.coin}', ${l}, this)">${l}x</button>
-                                `).join('')}
-                            </div>
-
-                            <div class="profit-section">
-                                <div>
-                                    <div class="profit-label">10min Profit</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Est. Return</div>
-                                </div>
-                                <div class="profit-amount">+$${profit}</div>
-                            </div>
-                            
-                            <button class="enter-btn" onclick="prepareTrade('${sig.coin}', '${sig.signal}', ${sig.price}, ${lev})">
-                                ENTER ${sig.signal} @ ${lev}x
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function selectLeverage(coin, leverage, btn) {
-            state.selectedLeverage[coin] = leverage;
-            const card = btn.closest('.signal-card');
-            card.querySelectorAll('.lev-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderSignals();
-        }
-
-        function showTradingPlan(coin, signal, entry, leverage) {
-            const tp = signal === 'LONG' ? entry * (1 + CONFIG.tpPercent/100) : entry * (1 - CONFIG.tpPercent/100);
-            const sl = signal === 'LONG' ? entry * (1 - CONFIG.slPercent/100) : entry * (1 + CONFIG.slPercent/100);
-            const liq = signal === 'LONG' ? 
-                entry * (1 - (1/leverage) + CONFIG.maintenanceMargin) : 
-                entry * (1 + (1/leverage) - CONFIG.maintenanceMargin);
-            
-            document.getElementById('planSubtitle').textContent = `${coin}/USDT • ${signal} • ${leverage}x`;
-            document.getElementById('planRR').textContent = `1:${(CONFIG.tpPercent/CONFIG.slPercent).toFixed(1)}`;
-            document.getElementById('planRisk').textContent = `$${(CONFIG.defaultPositionSize * CONFIG.slPercent/100).toFixed(2)}`;
-            document.getElementById('planEntry').textContent = '$' + formatPrice(entry);
-            document.getElementById('planTP').textContent = '$' + formatPrice(tp);
-            document.getElementById('planSL').textContent = '$' + formatPrice(sl);
-            document.getElementById('planLiq').textContent = '$' + formatPrice(liq);
-            
-            document.getElementById('planModal').classList.add('active');
-        }
-
-        function closePlanModal() {
-            document.getElementById('planModal').classList.remove('active');
-        }
-
-        function prepareTrade(coin, signal, price, leverage) {
-            state.pendingTrade = { coin, signal, price, leverage };
-            const risk = (CONFIG.defaultPositionSize * CONFIG.slPercent / 100).toFixed(2);
-            const reward = (CONFIG.defaultPositionSize * leverage * CONFIG.tpPercent / 100).toFixed(2);
-            
-            document.getElementById('confirmText').innerHTML = `
-                ${signal} ${coin} @ ${leverage}x<br><br>
-                Risk: $${risk}<br>
-                Target: $${reward}
-            `;
-            document.getElementById('confirmModal').classList.add('active');
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.remove('active');
-            state.pendingTrade = null;
-        }
-
-        function confirmTrade() {
-            if (!state.pendingTrade) return;
-            const { coin, signal, price, leverage } = state.pendingTrade;
-            
-            if (CONFIG.defaultPositionSize > state.balance) {
-                showToast('Insufficient balance', 'error');
-                closeConfirmModal();
-                return;
-            }
-            
-            const liq = signal === 'LONG' ? 
-                price * (1 - (1/leverage) + CONFIG.maintenanceMargin) : 
-                price * (1 + (1/leverage) - CONFIG.maintenanceMargin);
-            
-            state.balance -= CONFIG.defaultPositionSize;
-            state.trades.push({
-                coin, type: signal, amount: CONFIG.defaultPositionSize, leverage,
-                entryPrice: price, currentPrice: price, liquidationPrice: liq,
-                tpPrice: signal === 'LONG' ? price * 1.0075 : price * 0.9925,
-                slPrice: signal === 'LONG' ? price * 0.997 : price * 1.003,
-                unrealizedPnl: 0, time: Date.now()
-            });
-            
-            saveData();
-            updateBalance();
-            closeConfirmModal();
-            showToast('Position opened', 'success');
-            switchTab('trades');
-        }
-
-        function updateBalance() {
-            document.getElementById('balanceDisplay').textContent = '$' + state.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Section').classList.add('active');
-            if (tab === 'trades') renderOpenTrades();
-            if (tab === 'history') renderHistory();
-        }
-
-        function updatePositionsRealTime() {
-            state.trades.forEach(trade => {
-                const market = state.prices[trade.coin];
-                if (market) {
-                    trade.currentPrice = market.price * (1 + (Math.random() - 0.5) * 0.0002);
-                    const change = ((trade.currentPrice - trade.entryPrice) / trade.entryPrice) * (trade.type === 'LONG' ? 1 : -1);
-                    trade.unrealizedPnl = trade.amount * change * trade.leverage;
-                }
-            });
-            renderOpenTrades();
-        }
-
-        function renderOpenTrades() {
-            const container = document.getElementById('openTradesList');
-            const badge = document.getElementById('tradeCount');
-            
-            if (state.trades.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">◈</div>
-                        <div>No active positions</div>
-                    </div>`;
-                badge.style.display = 'none';
-                return;
-            }
-            
-            badge.style.display = 'block';
-            badge.textContent = state.trades.length;
-            
-            container.innerHTML = state.trades.map((t, i) => {
-                const pnl = t.unrealizedPnl || 0;
-                const isProfit = pnl >= 0;
-                const liqDist = Math.abs((t.currentPrice - t.liquidationPrice) / t.currentPrice * 100);
-                const danger = liqDist < 15;
-                
-                return `
-                    <div class="position-card ${danger ? 'danger' : ''}">
-                        <div class="live-indicator">
-                            <div class="live-dot"></div>
-                            <span>LIVE</span>
-                        </div>
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <div style="font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em;">${t.coin} 
-                                <span style="font-size: 0.85rem; color: var(--text-dim); font-weight: 500;">${t.type} ${t.leverage}x</span>
-                            </div>
-                        </div>
-                        
-                        <div class="pnl-display ${isProfit ? 'pnl-positive' : 'pnl-negative'}">
-                            ${isProfit ? '+' : ''}$${pnl.toFixed(2)}
-                        </div>
-
-                        <div class="liq-panel">
-                            <div class="liq-label">Liquidation Price</div>
-                            <div class="liq-price ${danger ? '' : 'liq-safe'}">$${formatPrice(t.liquidationPrice)}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem;">${liqDist.toFixed(1)}% away</div>
-                        </div>
-                        
-                        <div class="position-grid">
-                            <div class="position-stat">
-                                <div class="stat-label">Entry</div>
-                                <div class="stat-value">$${formatPrice(t.entryPrice)}</div>
-                            </div>
-                            <div class="position-stat">
-                                <div class="stat-label">Current</div>
-                                <div class="stat-value">$${formatPrice(t.currentPrice)}</div>
-                            </div>
-                            <div class="position-stat">
-                                <div class="stat-label">Take Profit</div>
-                                <div class="stat-value success">$${formatPrice(t.tpPrice)}</div>
-                            </div>
-                            <div class="position-stat">
-                                <div class="stat-label">Stop Loss</div>
-                                <div class="stat-value danger">$${formatPrice(t.slPrice)}</div>
-                            </div>
-                        </div>
-                        
-                        <button class="close-btn" onclick="closeTrade(${i})">CLOSE POSITION</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function closeTrade(index) {
-            const trade = state.trades[index];
-            const pnl = trade.unrealizedPnl || 0;
-            if (!confirm(`Close position?\n\nP&L: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`)) return;
-            
-            state.balance += trade.amount + pnl;
-            trade.pnl = pnl;
-            trade.closeTime = Date.now();
-            state.history.push(trade);
-            state.trades.splice(index, 1);
-            
-            saveData();
-            updateBalance();
-            renderOpenTrades();
-            showToast(`Closed: ${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`, pnl >= 0 ? 'success' : 'error');
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('historyList');
-            if (state.history.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">◈</div>
-                        <div>No trade history</div>
-                    </div>`;
-                return;
-            }
-            
-            const wins = state.history.filter(h => h.pnl > 0).length;
-            const winRate = ((wins / state.history.length) * 100).toFixed(1);
-            const totalPnl = state.history.reduce((s, h) => s + h.pnl, 0);
-            
-            container.innerHTML = `
-                <div class="position-grid" style="margin-bottom: 1.5rem;">
-                    <div class="position-stat" style="text-align: center;">
-                        <div class="stat-label">Win Rate</div>
-                        <div class="stat-value" style="color: ${winRate > 50 ? 'var(--success)' : 'var(--danger)'}">${winRate}%</div>
-                    </div>
-                    <div class="position-stat" style="text-align: center;">
-                        <div class="stat-label">Total P&L</div>
-                        <div class="stat-value" style="color: ${totalPnl >= 0 ? 'var(--success)' : 'var(--danger)'}">${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}</div>
-                    </div>
-                </div>
-                ${state.history.slice().reverse().map(t => `
-                    <div class="position-card" style="border-left-color: ${t.pnl >= 0 ? 'var(--success)' : 'var(--danger)'}; opacity: 0.85;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 600; font-size: 1.1rem;">${t.coin} ${t.type} ${t.leverage}x</div>
-                                <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">${new Date(t.closeTime).toLocaleDateString()}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="color: ${t.pnl >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700; font-size: 1.3rem; font-family: 'JetBrains Mono', monospace;">
-                                    ${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        function showToast(msg, type = 'default') {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.className = 'toast show ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-    </script>
-</body>
-</html>
+            'AVAX': {
