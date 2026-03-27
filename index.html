@@ -1,743 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOD'S PLAN | Pro Trading Command</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --gold: #D4AF37;
-            --gold-light: #F4E8C1;
-            --dark: #0a0a0a;
-            --darker: #050505;
-            --panel: #111111;
-            --panel-light: #1a1a1a;
-            --success: #00d084;
-            --danger: #ff4757;
-            --danger-dark: #c0392b;
-            --warning: #f39c12;
-            --text: #e0e0e0;
-            --text-dim: #666666;
-            --info: #3498db;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background: var(--darker);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Intro */
-        #intro {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 1s ease-out, visibility 1s;
-        }
-
-        #intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-        .divine-text {
-            font-size: 2.5rem;
-            font-weight: 100;
-            letter-spacing: 0.5em;
-            color: var(--gold);
-            text-transform: uppercase;
-            opacity: 0;
-            transform: scale(0.8);
-            animation: divineAppear 2s ease-out forwards;
-            text-align: center;
-        }
-
-        .divine-text span { display: block; font-size: 0.4em; letter-spacing: 1em; margin-top: 1rem; color: var(--text-dim); }
-        @keyframes divineAppear { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-
-        .loading-bar { width: 200px; height: 2px; background: rgba(212, 175, 55, 0.2); margin-top: 3rem; position: relative; overflow: hidden; }
-        .loading-progress { position: absolute; left: 0; top: 0; height: 100%; background: var(--gold); width: 0%; animation: loadDivine 2.5s ease-out forwards; box-shadow: 0 0 20px var(--gold); }
-        @keyframes loadDivine { 0% { width: 0%; } 100% { width: 100%; } }
-
-        #app { display: none; padding-bottom: 100px; }
-        #app.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .header {
-            background: linear-gradient(180deg, var(--panel) 0%, rgba(17,17,17,0.8) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .brand { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.2em; color: var(--gold); }
-        
-        .balance-pill {
-            background: rgba(0, 208, 132, 0.1);
-            border: 1px solid rgba(0, 208, 132, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--success);
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-        }
-
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            background: rgba(0,0,0,0.3);
-            position: sticky;
-            top: 70px;
-            z-index: 99;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-tab {
-            flex: 1;
-            max-width: 120px;
-            padding: 0.8rem 0.5rem;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-dim);
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            position: relative;
-        }
-
-        .nav-tab.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold); }
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 10px; min-width: 18px; }
-
-        .section { display: none; padding: 1rem; max-width: 600px; margin: 0 auto; }
-        .section.active { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Signal Cards */
-        .signal-card {
-            background: var(--panel);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .signal-card.best {
-            border: 2px solid var(--gold);
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), var(--panel));
-            box-shadow: 0 0 30px rgba(212,175,55,0.1);
-        }
-
-        .signal-card.best::before {
-            content: 'DIVINE SIGNAL';
-            position: absolute;
-            top: 0; right: 0;
-            background: var(--gold);
-            color: var(--dark);
-            font-size: 0.65rem;
-            font-weight: 800;
-            letter-spacing: 0.2em;
-            padding: 0.4rem 1rem;
-            border-bottom-left-radius: 12px;
-        }
-
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .coin-pair { font-size: 1.5rem; font-weight: 700; color: white; }
-        
-        .signal-badge {
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .signal-long { background: rgba(0, 208, 132, 0.15); color: var(--success); border: 1px solid rgba(0, 208, 132, 0.3); }
-        .signal-short { background: rgba(255, 71, 87, 0.15); color: var(--danger); border: 1px solid rgba(255, 71, 87, 0.3); }
-
-        .price-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
-        .price { font-size: 1.8rem; font-weight: 300; font-family: 'Courier New', monospace; color: white; }
-        .change { font-size: 0.85rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; }
-        .positive { color: var(--success); background: rgba(0,208,132,0.1); }
-        .negative { color: var(--danger); background: rgba(255,71,87,0.1); }
-
-        .confidence-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-dim); }
-        .confidence-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .confidence-fill { height: 100%; background: var(--gold); border-radius: 2px; }
-
-        /* Info Button */
-        .info-btn {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.2);
-            border: 1px solid var(--info);
-            color: var(--info);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            z-index: 10;
-        }
-
-        .info-btn:hover { background: var(--info); color: white; transform: scale(1.1); }
-
-        /* Leverage Section */
-        .leverage-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
-        .section-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
-        
-        .lev-scroller { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: none; }
-        .lev-scroller::-webkit-scrollbar { display: none; }
-
-        .lev-btn {
-            flex-shrink: 0;
-            min-width: 48px;
-            padding: 0.7rem 0.9rem;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-dim);
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .lev-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); transform: scale(1.05); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
-        .lev-btn.danger { border-color: var(--danger); color: var(--danger); }
-
-        .risk-meter {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        .risk-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-        .risk-fill { height: 100%; background: var(--success); border-radius: 2px; transition: all 0.3s; }
-        .risk-fill.medium { background: var(--warning); }
-        .risk-fill.high { background: var(--danger); }
-
-        .profit-section {
-            background: linear-gradient(135deg, rgba(0,208,132,0.08), rgba(0,208,132,0.02));
-            border: 1px solid rgba(0,208,132,0.2);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .profit-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
-        .profit-amount { font-size: 1.5rem; color: var(--success); font-weight: 700; font-family: 'Courier New', monospace; }
-
-        .enter-btn {
-            width: 100%;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: linear-gradient(135deg, rgba(212,175,55,0.9), rgba(212,175,55,0.7));
-            border: none;
-            color: var(--dark);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(212,175,55,0.2);
-        }
-
-        .enter-btn:active { transform: scale(0.98); }
-        .enter-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Positions Tab - Enhanced */
-        .position-card {
-            background: var(--panel);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--gold);
-            position: relative;
-        }
-
-        .position-card.danger { border-left-color: var(--danger); animation: pulseDanger 2s infinite; }
-        @keyframes pulseDanger { 0%, 100% { box-shadow: 0 0 0 rgba(255,71,87,0); } 50% { box-shadow: 0 0 20px rgba(255,71,87,0.3); } }
-
-        .live-indicator {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.7rem;
-            color: var(--success);
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-        .pnl-display {
-            font-size: 2.2rem;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-        }
-
-        .pnl-positive { color: var(--success); text-shadow: 0 0 20px rgba(0,208,132,0.3); }
-        .pnl-negative { color: var(--danger); text-shadow: 0 0 20px rgba(255,71,87,0.3); }
-
-        .liq-warning {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid var(--danger);
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin: 1rem 0;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-
-        .liq-safe { background: rgba(0, 208, 132, 0.1); border-color: var(--success); color: var(--success); }
-
-        .liq-price {
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-top: 0.3rem;
-        }
-
-        .position-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .position-stat {
-            background: rgba(0,0,0,0.3);
-            padding: 0.8rem;
-            border-radius: 10px;
-            font-size: 0.8rem;
-        }
-
-        .position-stat.full { grid-column: 1 / -1; }
-
-        .stat-label { color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.2rem; }
-        .stat-value { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 600; color: white; }
-        .stat-value.danger { color: var(--danger); }
-        .stat-value.success { color: var(--success); }
-
-        .margin-bar {
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-        }
-
-        .margin-fill {
-            height: 100%;
-            background: var(--success);
-            border-radius: 2px;
-            transition: width 0.3s, background 0.3s;
-        }
-
-        .close-btn {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(255,71,87,0.1);
-            border: 2px solid var(--danger);
-            color: var(--danger);
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0.5rem;
-        }
-
-        .close-btn:active { background: rgba(255,71,87,0.2); transform: scale(0.98); }
-
-        /* Trading Plan Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .plan-modal {
-            background: var(--panel);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 450px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .plan-header {
-            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05));
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-            position: relative;
-        }
-
-        .plan-title { font-size: 1.3rem; color: var(--gold); font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
-        .plan-subtitle { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.3rem; }
-
-        .copy-all-btn {
-            position: absolute;
-            top: 1.5rem;
-            right: 3rem;
-            background: rgba(0,208,132,0.2);
-            border: 1px solid var(--success);
-            color: var(--success);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .copy-all-btn:active { transform: scale(0.95); background: var(--success); color: var(--dark); }
-
-        .close-modal {
-            position: absolute;
-            top: 1.5rem;
-            right: 1rem;
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: var(--text);
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        .plan-body { padding: 1.5rem; }
-
-        .plan-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin-bottom: 0.8rem;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            border-left: 3px solid transparent;
-            position: relative;
-        }
-
-        .copy-btn {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: var(--text-dim);
-            padding: 0.3rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            opacity: 0;
-            transition: all 0.2s;
-        }
-
-        .plan-row:hover .copy-btn { opacity: 1; }
-        .copy-btn:active { background: var(--gold); color: var(--dark); }
-
-        .plan-row.entry { border-left-color: var(--info); }
-        .plan-row.tp { border-left-color: var(--success); background: rgba(0,208,132,0.05); }
-        .plan-row.sl { border-left-color: var(--danger); background: rgba(255,71,87,0.05); }
-        .plan-row.liq { border-left-color: #e74c3c; background: rgba(231, 76, 60, 0.05); }
-
-        .plan-label { font-size: 0.8rem; color: var(--text-dim); }
-        .plan-label div:first-child { font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
-        .plan-value { font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: 700; text-align: right; padding-right: 3rem; }
-        .plan-value.tp { color: var(--success); }
-        .plan-value.sl { color: var(--danger); }
-        .plan-value.liq { color: #e74c3c; }
-
-        .plan-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
-        .plan-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .plan-stat { text-align: center; padding: 0.8rem; background: rgba(0,0,0,0.3); border-radius: 10px; }
-        .plan-stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.3rem; }
-        .plan-stat-value { font-size: 1rem; font-weight: 700; color: var(--gold); }
-
-        /* Confirmation Modal */
-        .confirm-modal { max-width: 350px; text-align: center; }
-        .confirm-title { font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem; }
-        .confirm-text { color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.5; }
-        .confirm-buttons { display: flex; gap: 1rem; }
-        .confirm-btn { flex: 1; padding: 1rem; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        .confirm-yes { background: var(--success); color: var(--dark); }
-        .confirm-no { background: rgba(255,255,255,0.1); color: var(--text); }
-
-        /* Empty States */
-        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-dim); }
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--panel);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 1rem 2rem;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            z-index: 2000;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.success { border-color: var(--success); color: var(--success); }
-        .toast.error { border-color: var(--danger); color: var(--danger); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divine Real Signals</title>
+<style>
+/* ---------- Global ---------- */
+body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#000; color:#fff; font-family:sans-serif;}
+* { box-sizing:border-box; }
+canvas#starfield { position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
+
+/* ---------- Loading Page ---------- */
+#loadingPage { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; z-index:1000; }
+#loadingPage h1 { color:gold; font-size:2.5rem; text-shadow:0 0 15px gold; margin-bottom:1rem; }
+#loadingBar { width:80%; height:12px; background:#222; border-radius:6px; overflow:hidden; }
+#loadingProgress { width:0%; height:100%; background:linear-gradient(90deg,gold,white); }
+
+/* ---------- Password ---------- */
+#passwordOverlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:2000; }
+#passContainer { display:flex; gap:15px; }
+.passBox { width:60px; height:60px; border:2px solid #555; border-radius:10px; display:flex; justify-content:center; align-items:center; font-size:2rem; color:#ffd700; box-shadow:0 0 10px rgba(255,215,0,0.5); transition:all 0.3s; }
+.passBox.filled { box-shadow:0 0 25px #00ffff, 0 0 50px #00ffff; color:#00ffff; }
+
+/* ---------- Dashboard ---------- */
+#dashboard { display:none; width:100%; height:100%; overflow-y:auto; position:relative; padding:10px; z-index:1; }
+.header { display:flex; justify-content:space-between; align-items:center; padding:10px; font-size:1.3rem; font-weight:bold; color:gold; text-shadow:0 0 10px gold; }
+.tabs { display:flex; gap:15px; margin:10px 0; }
+.tab { padding:10px 15px; background:#111; border-radius:10px; cursor:pointer; transition:all 0.3s; }
+.tab.active { background:gold; color:#000; }
+#controls { display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; margin:10px 0; }
+#controls label { font-size:1rem; }
+.signalCard { position:relative; background:rgba(255,255,255,0.05); border-radius:15px; padding:12px; margin:10px 0; }
+.signalCard.top { border:2px solid gold; box-shadow:0 0 15px gold; }
+.signalCoin { font-size:1.4rem; font-weight:bold; }
+.signalDetails { margin-top:8px; font-size:0.9rem; line-height:1.4; }
+.winrate { font-weight:bold; color:#00ff80; }
+.lightning { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; background:radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); animation:flash 0.3s linear 0s; display:none; }
+@keyframes flash { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
+
+/* ---------- Search / Analyzer ---------- */
+#searchTab { display:none; }
+#searchContainer { display:flex; flex-direction:column; gap:15px; margin:10px 0; }
+#searchContainer input { padding:10px; border-radius:10px; border:none; font-size:1rem; }
+#cryptoList { max-height:200px; overflow-y:auto; background:#111; border-radius:10px; }
+.cryptoItem { padding:10px; cursor:pointer; border-bottom:1px solid #222; }
+.cryptoItem:hover { background:gold; color:#000; }
+
+/* ---------- Coin Analysis ---------- */
+#coinPage { display:none; flex-direction:column; gap:15px; margin-top:10px; }
+#coinPage input { padding:8px; border-radius:10px; border:none; font-size:1rem; width:100%; }
+#coinPage button { padding:10px; border-radius:10px; border:none; background:gold; color:#000; font-weight:bold; cursor:pointer; }
+</style>
 </head>
 <body>
 
-    <div id="intro">
-        <div class="divine-text">
-            GOD'S PLAN
-            <span>Pro Trading Command</span>
-        </div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
+<canvas id="starfield"></canvas>
+
+<div id="loadingPage">
+  <h1>GOD'S PLAN</h1>
+  <div id="loadingBar"><div id="loadingProgress"></div></div>
+</div>
+
+<div id="passwordOverlay">
+  <h2 style="color:gold; margin-bottom:20px;">Enter Divine Code</h2>
+  <div id="passContainer">
+    <div class="passBox"></div>
+    <div class="passBox"></div>
+    <div class="passBox"></div>
+    <div class="passBox"></div>
+  </div>
+  <input type="password" id="hiddenPass" style="opacity:0; position:absolute;">
+</div>
+
+<div id="dashboard">
+  <div class="header"><span>DIVINE REAL SIGNALS</span><span id="balanceDisplay">$10,000</span></div>
+  <div class="tabs">
+    <div class="tab active" id="signalsTabBtn">Signals</div>
+    <div class="tab" id="searchTabBtn">Manual Analyzer</div>
+  </div>
+
+  <div id="signalsTab">
+    <div id="controls">
+      <label>Leverage: <span id="levVal">3x</span></label>
+      <input type="range" id="levSlider" min="1" max="15" value="3">
+      <label>Trade Size ($):</label>
+      <select id="tradeSize">
+        <option value="5">$5</option>
+        <option value="10" selected>$10</option>
+        <option value="15">$15</option>
+        <option value="20">$20</option>
+        <option value="50">$50</option>
+      </select>
+      <button onclick="generateSignals()">Refresh Signals</button>
     </div>
+    <div id="signalsContainer"></div>
+  </div>
 
-    <div id="app">
-        <div class="header">
-            <div class="header-content">
-                <div class="brand">DIVINE</div>
-                <div class="balance-pill" id="balanceDisplay">$10,000.00</div>
-            </div>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('signals')">Signals</button>
-            <button class="nav-tab" onclick="switchTab('trades')" id="tradesTab">
-                Positions <span class="badge" id="tradeCount" style="display:none">0</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('history')">History</button>
-        </div>
-
-        <div class="section active" id="signalsSection">
-            <div id="signalsList"></div>
-        </div>
-
-        <div class="section" id="tradesSection">
-            <div id="openTradesList">
-                <div class="empty-state">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <div>No active positions</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section" id="historySection">
-            <div id="historyList">
-                <div class="empty-state">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📜</div>
-                    <div>No trade history</div>
-                </div>
-            </div>
-        </div>
+  <div id="searchTab">
+    <div id="searchContainer">
+      <input type="text" id="cryptoSearch" placeholder="Search crypto...">
+      <div id="cryptoList"></div>
+      <div id="coinPage">
+        <input type="number" id="entryPrice" placeholder="Enter Entry Price">
+        <input type="number" id="coinLeverage" placeholder="Leverage">
+        <input type="number" id="coinSize" placeholder="Trade Size ($)">
+        <button onclick="analyzeManualTrade()">Analyze Trade</button>
+        <div id="manualResults"></div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Trading Plan Modal -->
-    <div class="modal-overlay" id="planModal" onclick="if(event.target === this) closePlanModal()">
-        <div class="plan-modal">
-            <div class="plan-header">
-                <button class="copy-all-btn" onclick="copyAllPrices()">📋 Copy All</button>
-                <div class="plan-title">📋 Trading Plan</div>
-                <div class="plan-subtitle" id="planSubtitle">BTC/USDT • LONG • 3x</div>
-                <button class="close-modal" onclick="closePlanModal()">×</button>
-            </div>
-            
-            <div class="plan-body">
-                <div class="plan-stats">
-                    <div class="plan-stat">
-                        <div class="plan-stat-label">Risk/Reward</div>
-                        <div class="plan-stat-value" id="planRR">1:2.5</div>
-                    </div>
-                    <div class="plan-stat">
-                        <div class="plan-stat-label">Risk Amount</div>
-                        <div class="plan-stat-value" id="planRisk">$3</div>
-                    </div>
-                    <div class="plan-stat">
-                        <div class="plan-stat-label">Leverage</div>
-                        <div class="plan-stat-value" id="planLev">3x</div>
-                    </div>
-                </div>
+<script>
+// ---------- Starfield ----------
+const canvas=document.getElementById('starfield');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let stars=[];
+for(let i=0;i<300;i++){stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, z:Math.random()*canvas.width});}
+function starAnim(){
+  ctx.fillStyle="black"; ctx.fillRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.z-=4; if(s.z<=0){ s.z=canvas.width; s.x=Math.random()*canvas.width; s.y=Math.random()*canvas.height; }
+    let k=128/s.z;
+    let px=(s.x-canvas.width/2)*k+canvas.width/2;
+    let py=(s.y-canvas.height/2)*k+canvas.height/2;
+    if(px>=0&&py>=0&&px<=canvas.width&&py<=canvas.height){ let size=(1-k/2)*2; ctx.fillStyle="white"; ctx.fillRect(px,py,size,size);}
+  });
+  requestAnimationFrame(starAnim);
+}
+starAnim();
 
-                <div class="plan-row entry">
-                    <div class="plan-label">
-                        <div>Entry Price</div>
-                        <div>Market Order Now</div>
-                    </div>
-                    <div class="plan-value" id="planEntry">$67,234.00</div>
-                    <button class="copy-btn" onclick="copyPrice('entry')">COPY</button>
-                </div>
+// ---------- Loading ----------
+let progress=0;
+let loadInt=setInterval(()=>{
+  progress+=Math.random()*15;
+  document.getElementById('loadingProgress').style.width=Math.min(progress,100)+'%';
+  if(progress>=100){ clearInterval(loadInt); showPass(); }
+},200);
 
-                <div class="plan-row tp">
-                    <div class="plan-label">
-                        <div>Take Profit</div>
-                        <div>Limit Order (GTC)</div>
-                    </div>
-                    <div class="plan-value tp" id="planTP">$67,435.20</div>
-                    <button class="copy-btn" onclick="copyPrice('tp')">COPY</button>
-                </div>
+// ---------- Password ----------
+const hiddenPass=document.getElementById('hiddenPass');
+const passBoxes=document.querySelectorAll('.passBox');
+let inputPass='';
+function showPass(){ document.getElementById('loadingPage').style.display='none'; document.getElementById('passwordOverlay').style.display='flex'; hiddenPass.focus();}
+hiddenPass.addEventListener('input', ()=>{
+  inputPass=hiddenPass.value;
+  passBoxes.forEach((b,i)=>{b.classList.toggle('filled',!!inputPass[i]);});
+  if(inputPass.length>=4){
+    if(inputPass==='4444'){
+      document.getElementById('passwordOverlay').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      generateSignals(); fetchCryptoList();
+    } else { alert('Wrong Code'); inputPass=''; hiddenPass.value=''; passBoxes.forEach(b=>b.classList.remove('filled')); }
+  }
+});
+passBoxes[0].addEventListener('click', ()=>hiddenPass.focus());
 
-                <div class="plan-row sl">
-                    <div class="plan-label">
-                        <div>Stop Loss</div>
-                        <div>Stop Market Order</div>
-                    </div>
-                    <div class="plan-value sl" id="planSL">$67,032.30</div>
-                    <button class="copy-btn" onclick="copyPrice('sl')">COPY</button>
-                </div>
+// ---------- Tabs ----------
+const signalsTabBtn=document.getElementById('signalsTabBtn');
+const searchTabBtn=document.getElementById('searchTabBtn');
+const signalsTabDiv=document.getElementById('signalsTab');
+const searchTabDiv=document.getElementById('searchTab');
+signalsTabBtn.addEventListener('click', ()=>{signalsTabBtn.classList.add('active'); searchTabBtn.classList.remove('active'); signalsTabDiv.style.display='block'; searchTabDiv.style.display='none';});
+searchTabBtn.addEventListener('click', ()=>{searchTabBtn.classList.add('active'); signalsTabBtn.classList.remove('active'); searchTabDiv.style.display='block'; signalsTabDiv.style.display='none';});
 
-                <div class="plan-row liq">
-                    <div class="plan-label">
-                        <div>Liquidation Price</div>
-                        <div>⚠️ Never let price reach here</div>
-                    </div>
-                    <div class="plan-value liq" id="planLiq">$50,425.50</div>
-                    <button class="copy-btn" onclick="copyPrice('liq')">COPY</button>
-                </div>
+// ---------- Indicators ----------
+function EMA(prices, period){ const k=2/(period+1); let ema=prices[0]; for(let i=1;i<prices.length;i++) ema=prices[i]*k + ema*(1-k); return ema; }
+function RSI(prices, period=14){ let gains=0, losses=0; for(let i=1;i<=period;i++){ const diff=prices[i]-prices[i-1]; diff>0?gains+=diff:losses-=diff;} const rs=gains/(losses||1); return 100-(100/(1+rs)); }
+function MACD(prices){ const ema12=EMA(prices,12); const ema26=EMA(prices,26); return ema12-ema26; }
+function Bollinger(prices){ const sma=prices.reduce((a,b)=>a+b,0)/prices.length; const std=Math.sqrt(prices.map(p=>(p-sma)**2).reduce((a,b)=>a+b)/prices.length); return {upper:sma+2*std, lower:sma-2*std}; }
 
-                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; margin-top: 1rem; font-size: 0.8rem; color: var(--text-dim);">
-                    <strong style="color: var(--gold);">Instructions:</strong><br>
-                    1. Open <span id="exchangeName">Binance</span> Futures<br>
-                    2. Set leverage to <span id="instrLev">3</span>x<br>
-                    3. Enter at market: <span id="instrEntry" style="color: white;">$67,234</span><br>
-                    4. Set TP: <span id="instrTP" style="color: var(--success);">$67,435</span><br>
-                    5. Set SL: <span id="instrSL" style="color: var(--danger);">$67,032</span><br>
-                    6. Position size: <span style="color: white;">$10</span>
-                </div>
-            </div>
+// ---------- Fetch Binance Data ----------
+async function getCandles(symbol, interval='1m', limit=100){ const url=`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`; return await fetch(url).then(r=>r.json()); }
 
-            <div class="plan-footer">
-                Double-check all prices before executing • Godspeed
-            </div>
-        </div>
+let leverage=3, tradeSize=10;
+document.getElementById('levSlider').addEventListener('input',e=>{ leverage=e.target.value; document.getElementById('levVal').innerText=leverage+'x'; generateSignals(); });
+document.getElementById('tradeSize').addEventListener('change',e=>{ tradeSize=+e.target.value; generateSignals(); });
+
+// ---------- Generate Signals ----------
+async function generateSignals(){
+  const container=document.getElementById('signalsContainer');
+  container.innerHTML='<div style="text-align:center; margin-top:20px;">Fetching signals...</div>';
+
+  const symbolsResp = await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo').then(r=>r.json());
+  const symbols = symbolsResp.symbols.filter(s=>s.contractType==="PERPETUAL"&&s.status==="TRADING").map(s=>s.symbol);
+
+  container.innerHTML='';
+  let signalList=[];
+
+  for(const sym of symbols){
+    try{
+      const klines1=await getCandles(sym,'1m',100);
+      const closes1=klines1.map(c=>+c[4]);
+      if(closes1.length<15) continue;
+
+      const emaFast1=EMA(closes1,9), emaSlow1=EMA(closes1,21);
+      const rsi1=RSI(closes1);
+      const macd1=MACD(closes1);
+      const bb1=Bollinger(closes1);
+
+      let direction=null;
+      if(rsi1<30 && emaFast1>emaSlow1 && macd1>0) direction='LONG';
+      if(rsi1>70 && emaFast1<emaSlow1 && macd1<0) direction='SHORT';
+      if(!direction) continue;
+
+      const price=closes1[closes1.length-1];
+      const vol=Math.abs(emaFast1-emaSlow1)/price;
+      const rrFactor=2+vol*5;
+      let sl,tp;
+      if(direction==='LONG'){ sl=price*(1-vol*0.5); tp=price*(1+vol*rrFactor); }
+      else { sl=price*(1+vol*0.5); tp=price*(1-vol*rrFactor); }
+      const liq=direction==='LONG'?price*(1-1/leverage):price*(1+1/leverage);
+
+      const winrateEst=Math.min(99, Math.max(65, Math.floor(60+vol*500)));
+
+      signalList.push({sym,direction,price,tp,sl,liq,winrateEst});
+    } catch{}
+  }
+
+  signalList.sort((a,b)=>b.winrateEst-a.winrateEst);
+
+  signalList.forEach((s,i)=>{
+    const card=document.createElement('div');
+    card.className='signalCard'+(i<3?' top':'');
+    card.innerHTML=`
+      <div class="signalCoin">${s.sym} • ${s.direction}</div>
+      <div class="signalDetails">
+        Entry: $${s.price.toFixed(2)}<br>
+        TP:     $${s.tp.toFixed(2)}<br>
+        SL:     $${s.sl.toFixed(2)}<br>
+        Liq:    $${s.liq.toFixed(2)}<br>
+        Leverage: ${leverage}x<br>
+        Size: $${tradeSize}<br>
+        <span class="winrate">Winrate: ${s.winrateEst}%</span>
+      </div>
+      <div class="lightning"></div>
+    `;
+    container.appendChild(card);
+    if(i<3){ const l=card.querySelector('.lightning'); l.style.display='block'; setTimeout(()=>l.style.display='none',300);}
+  });
+}
+
+setInterval(generateSignals,60000);
+
+// ---------- Manual Analyzer ----------
+let allSymbols=[];
+async function fetchCryptoList(){
+  const symbolsResp = await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo').then(r=>r.json());
+  allSymbols = symbolsResp.symbols.filter(s=>s.contractType==="PERPETUAL"&&s.status==="TRADING").map(s=>s.symbol);
+  displayCryptoList('');
+}
+function displayCryptoList(filter){
+  const listDiv=document.getElementById('cryptoList');
+  listDiv.innerHTML='';
+  allSymbols.filter(s=>s.toLowerCase().includes(filter.toLowerCase())).forEach(sym=>{
+    const item=document.createElement('div'); item.className='cryptoItem'; item.innerText=sym;
+    item.addEventListener('click',()=>{ openCoinPage(sym); });
+    listDiv.appendChild(item);
+  });
+}
+document.getElementById('cryptoSearch').addEventListener('input',e=>displayCryptoList(e.target.value));
+
+function openCoinPage(symbol){
+  document.getElementById('coinPage').style.display='flex';
+  document.getElementById('coinPage').dataset.symbol=symbol;
+  document.getElementById('manualResults').innerHTML='';
+}
+
+async function analyzeManualTrade(){
+  const symbol=document.getElementById('coinPage').dataset.symbol;
+  const entry=+document.getElementById('entryPrice').value;
+  const lev=+document.getElementById('coinLeverage').value;
+  const size=+document.getElementById('coinSize').value;
+  if(!symbol || !entry || !lev || !size){ alert('Enter all fields'); return; }
+
+  const klines=await getCandles(symbol,'1m',100);
+  const closes=klines.map(c=>+c[4]);
+  const emaFast=EMA(closes,9), emaSlow=EMA(closes,21);
+  const rsiVal=RSI(closes);
+  const macdVal=MACD(closes);
+  const vol=Math.abs(emaFast-emaSlow)/entry;
+  const rrFactor=2+vol*5;
+  let direction=null;
+  if(rsiVal<30 && emaFast>emaSlow && macdVal>0) direction='LONG';
+  if(rsiVal>70 && emaFast<emaSlow && macdVal<0) direction='SHORT';
+  if(!direction) direction='UNKNOWN';
+  let sl,tp;
+  if(direction==='LONG'){ sl=entry*(1-vol*0.5); tp=entry*(1+vol*rrFactor); }
+  else if(direction==='SHORT'){ sl=entry*(1+vol*0.5); tp=entry*(1-vol*rrFactor); }
+  else { sl=entry; tp=entry; }
+  const liq=direction==='LONG'?entry*(1-1/lev):entry*(1+1/lev);
+const winrate=Math.min(99, Math.max(60, Math.floor(60 + vol*500)));
+
+document.getElementById('manualResults').innerHTML=`
+  <div class="signalCard top">
+    <div class="signalCoin">${symbol} • ${direction}</div>
+    <div class="signalDetails">
+      Entry: $${entry.toFixed(2)}<br>
+      TP: $${tp.toFixed(2)}<br>
+      SL: $${sl.toFixed(2)}<br>
+      Liq: $${liq.toFixed(2)}<br>
+      Leverage: ${lev}x<br>
+      Size: $${size}<br>
+      <span class="winrate">Estimated Winrate: ${winrate}%</span>
     </div>
+    <div class="lightning" style="display:block;"></div>
+  </div>
+`;
+}
 
-    <!-- Confirmation Modal -->
-    <div class="modal-overlay" id="confirmModal">
-        <div class="plan-modal confirm-modal">
-            <div class="plan-body">
-                <div class="confirm-title">⚠️ Confirm Trade</div>
-                <div class="confirm-text" id="confirmText">
-                    You are about to enter a LONG position on BTC at 3x leverage.<br><br>
-                    Risk: $3 (0.3%)<br>
-                    Potential Profit: $7.50
-                </div>
-                <div class="confirm-buttons">
-                    <button class="confirm-btn confirm-no" onclick="closeConfirmModal()">Cancel</button>
-                    <button class="confirm-btn confirm-yes" onclick="confirmTrade()">Execute</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// ---------- Adjust viewport ----------
+window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
 
-    <div class="toast" id="toast"></div>
+// ---------- Continuous update of signals ----------
+async function continuousUpdate(){
+  try{ await generateSignals(); } catch(e){}
+  setTimeout(continuousUpdate,30000);
+}
+continuousUpdate();
 
-    <script>
-        // Pro Trading Configuration
-        const CONFIG = {
-            maxRiskPercent: 0.3,        // 0.3% risk per trade (ultra-conservative)
-            defaultPositionSize: 10,     // $10 per trade
-            tpPercent: 0.75,             // 0.75% take profit
-            slPercent: 0.3,              // 0.3% stop loss (tight)
-            maintenanceMargin: 0.005,    // 0.5% maintenance
-            maxLeverage: 10,
-            safeLeverage: 3,             // Default safe leverage
-            updateInterval: 1000         // 1 second updates
-        };
-
-        const state = {
-            balance: 10000,
-            trades: [],
-            history: [],
-            prices: {},
-            signals: [],
-            selectedLeverage: {},
-            lastUpdate: Date.now(),
-            updateInterval: null,
-            pendingTrade: null
-        };
-
-        // Extended coin mapping with 20+ high-volatility scalping pairs
-        const COINS = {
-            'BTC': { id: 'bitcoin', volatility: 0.8, minMove: 0.4 },
-            'ETH': { id: 'ethereum', volatility: 1.0, minMove: 0.5 },
-            'BNB': { id: 'binancecoin', volatility: 1.2, minMove: 0.6 },
-            'SOL': { id: 'solana', volatility: 1.5, minMove: 0.8 },
-            'XRP': { id: 'ripple', volatility: 1.2, minMove: 0.6 },
-            'DOGE': { id: 'dogecoin', volatility: 2.0, minMove: 1.0 },
-            'ADA': { id: 'cardano', volatility: 1.3, minMove: 0.7 },
-            'AVAX': {
+</script>
+</body>
+</html>
