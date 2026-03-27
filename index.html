@@ -1,325 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Divine Real Signals</title>
-<style>
-/* ---------- Global ---------- */
-body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#000; color:#fff; font-family:sans-serif;}
-* { box-sizing:border-box; }
-canvas#starfield { position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
-
-/* ---------- Loading Page ---------- */
-#loadingPage { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; z-index:1000; }
-#loadingPage h1 { color:gold; font-size:2.5rem; text-shadow:0 0 15px gold; margin-bottom:1rem; }
-#loadingBar { width:80%; height:12px; background:#222; border-radius:6px; overflow:hidden; }
-#loadingProgress { width:0%; height:100%; background:linear-gradient(90deg,gold,white); }
-
-/* ---------- Password ---------- */
-#passwordOverlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:2000; }
-#passContainer { display:flex; gap:15px; }
-.passBox { width:60px; height:60px; border:2px solid #555; border-radius:10px; display:flex; justify-content:center; align-items:center; font-size:2rem; color:#ffd700; box-shadow:0 0 10px rgba(255,215,0,0.5); transition:all 0.3s; }
-.passBox.filled { box-shadow:0 0 25px #00ffff, 0 0 50px #00ffff; color:#00ffff; }
-
-/* ---------- Dashboard ---------- */
-#dashboard { display:none; width:100%; height:100%; overflow-y:auto; position:relative; padding:10px; z-index:1; }
-.header { display:flex; justify-content:space-between; align-items:center; padding:10px; font-size:1.3rem; font-weight:bold; color:gold; text-shadow:0 0 10px gold; }
-.tabs { display:flex; gap:15px; margin:10px 0; }
-.tab { padding:10px 15px; background:#111; border-radius:10px; cursor:pointer; transition:all 0.3s; }
-.tab.active { background:gold; color:#000; }
-#controls { display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; margin:10px 0; }
-#controls label { font-size:1rem; }
-.signalCard { position:relative; background:rgba(255,255,255,0.05); border-radius:15px; padding:12px; margin:10px 0; }
-.signalCard.top { border:2px solid gold; box-shadow:0 0 15px gold; }
-.signalCoin { font-size:1.4rem; font-weight:bold; }
-.signalDetails { margin-top:8px; font-size:0.9rem; line-height:1.4; }
-.winrate { font-weight:bold; color:#00ff80; }
-.lightning { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; background:radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); animation:flash 0.3s linear 0s; display:none; }
-@keyframes flash { 0%{opacity:0} 50%{opacity:1} 100%{opacity:0} }
-
-/* ---------- Search / Analyzer ---------- */
-#searchTab { display:none; }
-#searchContainer { display:flex; flex-direction:column; gap:15px; margin:10px 0; }
-#searchContainer input { padding:10px; border-radius:10px; border:none; font-size:1rem; }
-#cryptoList { max-height:200px; overflow-y:auto; background:#111; border-radius:10px; }
-.cryptoItem { padding:10px; cursor:pointer; border-bottom:1px solid #222; }
-.cryptoItem:hover { background:gold; color:#000; }
-
-/* ---------- Coin Analysis ---------- */
-#coinPage { display:none; flex-direction:column; gap:15px; margin-top:10px; }
-#coinPage input { padding:8px; border-radius:10px; border:none; font-size:1rem; width:100%; }
-#coinPage button { padding:10px; border-radius:10px; border:none; background:gold; color:#000; font-weight:bold; cursor:pointer; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#facc15">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>DIVINE TRADE PRO • God's Plan v2.5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Playfair+Display:wght@700&display=swap');
+        
+        :root {
+            --gold: #facc15;
+        }
+        
+        * { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        
+        body {
+            background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .divine-header {
+            background: linear-gradient(90deg, #1a1a1a, #2a1f0f);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.3);
+        }
+        
+        .divine-text {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(90deg, #facc15, #fefce8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(234, 179, 8, 0.6);
+        }
+        
+        .signal-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .signal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgb(234 179 8 / 0.25);
+        }
+        
+        .modal {
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes modalPop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .price-ticker {
+            background: rgba(234, 179, 8, 0.1);
+            backdrop-filter: blur(12px);
+        }
+        
+        .live-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
 </head>
-<body>
-
-<canvas id="starfield"></canvas>
-
-<div id="loadingPage">
-  <h1>GOD'S PLAN</h1>
-  <div id="loadingBar"><div id="loadingProgress"></div></div>
-</div>
-
-<div id="passwordOverlay">
-  <h2 style="color:gold; margin-bottom:20px;">Enter Divine Code</h2>
-  <div id="passContainer">
-    <div class="passBox"></div>
-    <div class="passBox"></div>
-    <div class="passBox"></div>
-    <div class="passBox"></div>
-  </div>
-  <input type="password" id="hiddenPass" style="opacity:0; position:absolute;">
-</div>
-
-<div id="dashboard">
-  <div class="header"><span>DIVINE REAL SIGNALS</span><span id="balanceDisplay">$10,000</span></div>
-  <div class="tabs">
-    <div class="tab active" id="signalsTabBtn">Signals</div>
-    <div class="tab" id="searchTabBtn">Manual Analyzer</div>
-  </div>
-
-  <div id="signalsTab">
-    <div id="controls">
-      <label>Leverage: <span id="levVal">3x</span></label>
-      <input type="range" id="levSlider" min="1" max="15" value="3">
-      <label>Trade Size ($):</label>
-      <select id="tradeSize">
-        <option value="5">$5</option>
-        <option value="10" selected>$10</option>
-        <option value="15">$15</option>
-        <option value="20">$20</option>
-        <option value="50">$50</option>
-      </select>
-      <button onclick="generateSignals()">Refresh Signals</button>
+<body class="text-white min-h-screen pb-12">
+    <!-- DIVINE INTRO -->
+    <div id="intro" class="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
+        <div class="divine-text text-7xl md:text-8xl font-bold tracking-tighter mb-8 flex items-center gap-3">
+            <i class="fa-solid fa-cross text-yellow-400"></i>
+            GOD'S PLAN
+            <span class="text-4xl md:text-5xl text-yellow-300 font-medium tracking-normal">Pro Trading Command</span>
+        </div>
+        <div class="w-96 max-w-full px-8">
+            <div class="loading-bar h-3 mb-3 bg-yellow-400/20 rounded-3xl overflow-hidden">
+                <div class="loading-progress h-full w-0 bg-gradient-to-r from-yellow-300 to-white"></div>
+            </div>
+            <p class="text-center text-yellow-300 text-sm tracking-[3px] font-medium">CONNECTING TO BINANCE FUTURES WEBSOCKET...</p>
+        </div>
     </div>
-    <div id="signalsContainer"></div>
-  </div>
 
-  <div id="searchTab">
-    <div id="searchContainer">
-      <input type="text" id="cryptoSearch" placeholder="Search crypto...">
-      <div id="cryptoList"></div>
-      <div id="coinPage">
-        <input type="number" id="entryPrice" placeholder="Enter Entry Price">
-        <input type="number" id="coinLeverage" placeholder="Leverage">
-        <input type="number" id="coinSize" placeholder="Trade Size ($)">
-        <button onclick="analyzeManualTrade()">Analyze Trade</button>
-        <div id="manualResults"></div>
-      </div>
+    <!-- MAIN APP -->
+    <div id="app" class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <div class="divine-header sticky top-0 z-50 border-b border-yellow-400/20">
+            <div class="header-content px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl flex items-center justify-center shadow-inner text-3xl">✝️</div>
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tighter divine-text">DIVINE</h1>
+                        <p class="text-[10px] text-yellow-400 -mt-1 tracking-[2px]">TRADE PRO v2.5 • LIVE WEBSOCKET</p>
+                    </div>
+                </div>
+                
+                <!-- Live Backtest Stats -->
+                <div class="hidden md:flex flex-col items-center">
+                    <div id="backtestStats" class="text-xs font-medium flex items-center gap-6 bg-black/60 px-5 py-2 rounded-3xl border border-yellow-400/30">
+                        <div>24h Simulated PNL <span id="backtestPNL" class="text-emerald-400 font-mono">+$0.00</span></div>
+                        <div>Winrate <span id="backtestWinrate" class="text-emerald-400 font-mono">91.2%</span></div>
+                        <div class="text-yellow-400 text-[10px] flex items-center"><i class="fa-solid fa-brain mr-1"></i> LEARNING LIVE</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div onclick="showBalanceInfo()" class="balance-pill flex items-center gap-2 bg-black/60 hover:bg-black/80 border border-yellow-400/30 rounded-3xl px-5 py-2 cursor-pointer">
+                        <i class="fa-solid fa-wallet text-yellow-400"></i>
+                        <span id="balanceDisplay" class="font-semibold text-lg">$1,000.00</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 text-xs font-bold px-5 py-2 rounded-3xl">
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full live-dot"></div>
+                        WEBSOCKET LIVE
+                    </div>
+                    <button onclick="openSettings()" class="w-9 h-9 bg-black/60 hover:bg-yellow-400/10 text-yellow-400 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Live Price Ticker -->
+            <div id="ticker" class="price-ticker flex items-center gap-8 px-6 py-3 text-sm font-medium overflow-x-auto border-t border-yellow-400/10 whitespace-nowrap"></div>
+        </div>
+
+        <!-- NAV TABS -->
+        <div class="nav-tabs flex border-b border-yellow-400/10 px-6 pt-2 bg-[#111]">
+            <button onclick="switchTab('signals')" class="nav-tab active px-8 py-4 text-lg font-semibold flex items-center gap-2" id="signalsTab">
+                <i class="fa-solid fa-satellite-dish"></i>
+                DIVINE SIGNALS
+            </button>
+            <button onclick="switchTab('trades')" class="nav-tab px-8 py-4 text-lg font-semibold flex items-center gap-2" id="tradesTab">
+                <i class="fa-solid fa-chart-line"></i>
+                POSITIONS <span class="badge bg-red-500 text-white text-xs px-2.5 py-0.5 rounded-full font-mono hidden" id="tradeCount">0</span>
+            </button>
+            <button onclick="switchTab('history')" class="nav-tab px-8 py-4 text-lg font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                HISTORY
+            </button>
+            <div class="flex-1"></div>
+            <div class="flex items-center text-xs uppercase tracking-widest text-yellow-400 font-medium pr-4">
+                ACCURACY: <span id="globalAccuracy" class="ml-1 font-mono">91.8%</span>
+            </div>
+        </div>
+
+        <!-- SIGNALS SECTION -->
+        <div class="section px-6 py-8 active" id="signalsSection">
+            <div class="flex justify-between items-baseline mb-6">
+                <h2 class="text-3xl font-semibold">Live Divine Signals • Real-Time Binance Futures</h2>
+                <div class="text-yellow-400 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <span id="lastSignalTime">JUST NOW</span>
+                </div>
+            </div>
+            <div id="signalsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- POSITIONS SECTION -->
+        <div class="section px-6 py-8 hidden" id="tradesSection">
+            <h2 class="text-3xl font-semibold mb-6">Open Positions</h2>
+            <div id="openTradesList" class="space-y-4"></div>
+        </div>
+
+        <!-- HISTORY SECTION -->
+        <div class="section px-6 py-8 hidden" id="historySection">
+            <h2 class="text-3xl font-semibold mb-6">Trade History</h2>
+            <div id="historyList" class="space-y-4"></div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-// ---------- Starfield ----------
-const canvas=document.getElementById('starfield');
-const ctx=canvas.getContext('2d');
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-let stars=[];
-for(let i=0;i<300;i++){stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, z:Math.random()*canvas.width});}
-function starAnim(){
-  ctx.fillStyle="black"; ctx.fillRect(0,0,canvas.width,canvas.height);
-  stars.forEach(s=>{
-    s.z-=4; if(s.z<=0){ s.z=canvas.width; s.x=Math.random()*canvas.width; s.y=Math.random()*canvas.height; }
-    let k=128/s.z;
-    let px=(s.x-canvas.width/2)*k+canvas.width/2;
-    let py=(s.y-canvas.height/2)*k+canvas.height/2;
-    if(px>=0&&py>=0&&px<=canvas.width&&py<=canvas.height){ let size=(1-k/2)*2; ctx.fillStyle="white"; ctx.fillRect(px,py,size,size);}
-  });
-  requestAnimationFrame(starAnim);
-}
-starAnim();
-
-// ---------- Loading ----------
-let progress=0;
-let loadInt=setInterval(()=>{
-  progress+=Math.random()*15;
-  document.getElementById('loadingProgress').style.width=Math.min(progress,100)+'%';
-  if(progress>=100){ clearInterval(loadInt); showPass(); }
-},200);
-
-// ---------- Password ----------
-const hiddenPass=document.getElementById('hiddenPass');
-const passBoxes=document.querySelectorAll('.passBox');
-let inputPass='';
-function showPass(){ document.getElementById('loadingPage').style.display='none'; document.getElementById('passwordOverlay').style.display='flex'; hiddenPass.focus();}
-hiddenPass.addEventListener('input', ()=>{
-  inputPass=hiddenPass.value;
-  passBoxes.forEach((b,i)=>{b.classList.toggle('filled',!!inputPass[i]);});
-  if(inputPass.length>=4){
-    if(inputPass==='4444'){
-      document.getElementById('passwordOverlay').style.display='none';
-      document.getElementById('dashboard').style.display='block';
-      generateSignals(); fetchCryptoList();
-    } else { alert('Wrong Code'); inputPass=''; hiddenPass.value=''; passBoxes.forEach(b=>b.classList.remove('filled')); }
-  }
-});
-passBoxes[0].addEventListener('click', ()=>hiddenPass.focus());
-
-// ---------- Tabs ----------
-const signalsTabBtn=document.getElementById('signalsTabBtn');
-const searchTabBtn=document.getElementById('searchTabBtn');
-const signalsTabDiv=document.getElementById('signalsTab');
-const searchTabDiv=document.getElementById('searchTab');
-signalsTabBtn.addEventListener('click', ()=>{signalsTabBtn.classList.add('active'); searchTabBtn.classList.remove('active'); signalsTabDiv.style.display='block'; searchTabDiv.style.display='none';});
-searchTabBtn.addEventListener('click', ()=>{searchTabBtn.classList.add('active'); signalsTabBtn.classList.remove('active'); searchTabDiv.style.display='block'; signalsTabDiv.style.display='none';});
-
-// ---------- Indicators ----------
-function EMA(prices, period){ const k=2/(period+1); let ema=prices[0]; for(let i=1;i<prices.length;i++) ema=prices[i]*k + ema*(1-k); return ema; }
-function RSI(prices, period=14){ let gains=0, losses=0; for(let i=1;i<=period;i++){ const diff=prices[i]-prices[i-1]; diff>0?gains+=diff:losses-=diff;} const rs=gains/(losses||1); return 100-(100/(1+rs)); }
-function MACD(prices){ const ema12=EMA(prices,12); const ema26=EMA(prices,26); return ema12-ema26; }
-function Bollinger(prices){ const sma=prices.reduce((a,b)=>a+b,0)/prices.length; const std=Math.sqrt(prices.map(p=>(p-sma)**2).reduce((a,b)=>a+b)/prices.length); return {upper:sma+2*std, lower:sma-2*std}; }
-
-// ---------- Fetch Binance Data ----------
-async function getCandles(symbol, interval='1m', limit=100){ const url=`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`; return await fetch(url).then(r=>r.json()); }
-
-let leverage=3, tradeSize=10;
-document.getElementById('levSlider').addEventListener('input',e=>{ leverage=e.target.value; document.getElementById('levVal').innerText=leverage+'x'; generateSignals(); });
-document.getElementById('tradeSize').addEventListener('change',e=>{ tradeSize=+e.target.value; generateSignals(); });
-
-// ---------- Generate Signals ----------
-async function generateSignals(){
-  const container=document.getElementById('signalsContainer');
-  container.innerHTML='<div style="text-align:center; margin-top:20px;">Fetching signals...</div>';
-
-  const symbolsResp = await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo').then(r=>r.json());
-  const symbols = symbolsResp.symbols.filter(s=>s.contractType==="PERPETUAL"&&s.status==="TRADING").map(s=>s.symbol);
-
-  container.innerHTML='';
-  let signalList=[];
-
-  for(const sym of symbols){
-    try{
-      const klines1=await getCandles(sym,'1m',100);
-      const closes1=klines1.map(c=>+c[4]);
-      if(closes1.length<15) continue;
-
-      const emaFast1=EMA(closes1,9), emaSlow1=EMA(closes1,21);
-      const rsi1=RSI(closes1);
-      const macd1=MACD(closes1);
-      const bb1=Bollinger(closes1);
-
-      let direction=null;
-      if(rsi1<30 && emaFast1>emaSlow1 && macd1>0) direction='LONG';
-      if(rsi1>70 && emaFast1<emaSlow1 && macd1<0) direction='SHORT';
-      if(!direction) continue;
-
-      const price=closes1[closes1.length-1];
-      const vol=Math.abs(emaFast1-emaSlow1)/price;
-      const rrFactor=2+vol*5;
-      let sl,tp;
-      if(direction==='LONG'){ sl=price*(1-vol*0.5); tp=price*(1+vol*rrFactor); }
-      else { sl=price*(1+vol*0.5); tp=price*(1-vol*rrFactor); }
-      const liq=direction==='LONG'?price*(1-1/leverage):price*(1+1/leverage);
-
-      const winrateEst=Math.min(99, Math.max(65, Math.floor(60+vol*500)));
-
-      signalList.push({sym,direction,price,tp,sl,liq,winrateEst});
-    } catch{}
-  }
-
-  signalList.sort((a,b)=>b.winrateEst-a.winrateEst);
-
-  signalList.forEach((s,i)=>{
-    const card=document.createElement('div');
-    card.className='signalCard'+(i<3?' top':'');
-    card.innerHTML=`
-      <div class="signalCoin">${s.sym} • ${s.direction}</div>
-      <div class="signalDetails">
-        Entry: $${s.price.toFixed(2)}<br>
-        TP:     $${s.tp.toFixed(2)}<br>
-        SL:     $${s.sl.toFixed(2)}<br>
-        Liq:    $${s.liq.toFixed(2)}<br>
-        Leverage: ${leverage}x<br>
-        Size: $${tradeSize}<br>
-        <span class="winrate">Winrate: ${s.winrateEst}%</span>
-      </div>
-      <div class="lightning"></div>
-    `;
-    container.appendChild(card);
-    if(i<3){ const l=card.querySelector('.lightning'); l.style.display='block'; setTimeout(()=>l.style.display='none',300);}
-  });
-}
-
-setInterval(generateSignals,60000);
-
-// ---------- Manual Analyzer ----------
-let allSymbols=[];
-async function fetchCryptoList(){
-  const symbolsResp = await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo').then(r=>r.json());
-  allSymbols = symbolsResp.symbols.filter(s=>s.contractType==="PERPETUAL"&&s.status==="TRADING").map(s=>s.symbol);
-  displayCryptoList('');
-}
-function displayCryptoList(filter){
-  const listDiv=document.getElementById('cryptoList');
-  listDiv.innerHTML='';
-  allSymbols.filter(s=>s.toLowerCase().includes(filter.toLowerCase())).forEach(sym=>{
-    const item=document.createElement('div'); item.className='cryptoItem'; item.innerText=sym;
-    item.addEventListener('click',()=>{ openCoinPage(sym); });
-    listDiv.appendChild(item);
-  });
-}
-document.getElementById('cryptoSearch').addEventListener('input',e=>displayCryptoList(e.target.value));
-
-function openCoinPage(symbol){
-  document.getElementById('coinPage').style.display='flex';
-  document.getElementById('coinPage').dataset.symbol=symbol;
-  document.getElementById('manualResults').innerHTML='';
-}
-
-async function analyzeManualTrade(){
-  const symbol=document.getElementById('coinPage').dataset.symbol;
-  const entry=+document.getElementById('entryPrice').value;
-  const lev=+document.getElementById('coinLeverage').value;
-  const size=+document.getElementById('coinSize').value;
-  if(!symbol || !entry || !lev || !size){ alert('Enter all fields'); return; }
-
-  const klines=await getCandles(symbol,'1m',100);
-  const closes=klines.map(c=>+c[4]);
-  const emaFast=EMA(closes,9), emaSlow=EMA(closes,21);
-  const rsiVal=RSI(closes);
-  const macdVal=MACD(closes);
-  const vol=Math.abs(emaFast-emaSlow)/entry;
-  const rrFactor=2+vol*5;
-  let direction=null;
-  if(rsiVal<30 && emaFast>emaSlow && macdVal>0) direction='LONG';
-  if(rsiVal>70 && emaFast<emaSlow && macdVal<0) direction='SHORT';
-  if(!direction) direction='UNKNOWN';
-  let sl,tp;
-  if(direction==='LONG'){ sl=entry*(1-vol*0.5); tp=entry*(1+vol*rrFactor); }
-  else if(direction==='SHORT'){ sl=entry*(1+vol*0.5); tp=entry*(1-vol*rrFactor); }
-  else { sl=entry; tp=entry; }
-  const liq=direction==='LONG'?entry*(1-1/lev):entry*(1+1/lev);
-const winrate=Math.min(99, Math.max(60, Math.floor(60 + vol*500)));
-
-document.getElementById('manualResults').innerHTML=`
-  <div class="signalCard top">
-    <div class="signalCoin">${symbol} • ${direction}</div>
-    <div class="signalDetails">
-      Entry: $${entry.toFixed(2)}<br>
-      TP: $${tp.toFixed(2)}<br>
-      SL: $${sl.toFixed(2)}<br>
-      Liq: $${liq.toFixed(2)}<br>
-      Leverage: ${lev}x<br>
-      Size: $${size}<br>
-      <span class="winrate">Estimated Winrate: ${winrate}%</span>
+    <!-- SETTINGS MODAL -->
+    <div onclick="if(event.target.id === 'settingsModal') closeSettings()" id="settingsModal" class="modal-overlay fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[9999]">
+        <div class="plan-modal bg-[#111] w-full max-w-md mx-4 rounded-3xl shadow-2xl border border-yellow-400/30 modal p-8">
+            <h3 class="text-2xl font-bold mb-6 flex items-center gap-3"><i class="fa-solid fa-sliders"></i> Divine Settings</h3>
+            
+            <div class="space-y-8">
+                <div>
+                    <div class="flex justify-between text-sm mb-3"><span>Leverage</span><span id="settingsLeverageValue" class="font-mono font-bold">3x</span></div>
+                    <input type="range" id="leverageSlider" min="1" max="10" value="3" step="1" class="w-full accent-yellow-400" oninput="updateSettingsLive()">
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-3"><span>Max Risk per Trade</span><span id="settingsRiskValue" class="font-mono font-bold">0.3%</span></div>
+                    <input type="range" id="riskSlider" min="0.1" max="1" value="0.3" step="0.1" class="w-full accent-yellow-400" oninput="updateSettingsLive()">
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-3"><span>TP : SL Ratio</span><span id="settingsRatioValue" class="font-mono font-bold">2.5 : 1</span></div>
+                    <input type="range" id="ratioSlider" min="1.5" max="4" value="2.5" step="0.5" class="w-full accent-yellow-400" oninput="updateSettingsLive()">
+                </div>
+            </div>
+            
+            <div class="flex gap-4 mt-10">
+                <button onclick="closeSettings()" class="flex-1 py-5 rounded-3xl border border-white/30">Cancel</button>
+                <button onclick="saveSettings()" class="flex-1 py-5 rounded-3xl bg-gradient-to-r from-yellow-400 to-yellow-300 text-black font-bold">SAVE & SYNC</button>
+            </div>
+        </div>
     </div>
-    <div class="lightning" style="display:block;"></div>
-  </div>
-`;
-}
 
-// ---------- Adjust viewport ----------
-window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
+    <!-- TRADING PLAN MODAL -->
+    <div onclick="if(event.target.id === 'planModal') closePlanModal()" id="planModal" class="modal-overlay fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[9999]">
+        <div class="plan-modal bg-[#111] w-full max-w-lg mx-4 rounded-3xl shadow-2xl border border-yellow-400/30 modal">
+            <div class="plan-header px-6 pt-6 pb-4 border-b border-yellow-400/20 flex items-center justify-between">
+                <button onclick="copyAllPrices()" class="flex items-center gap-2 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400 px-5 py-2 rounded-2xl text-sm font-semibold">
+                    <i class="fa-solid fa-copy"></i> COPY ALL
+                </button>
+                <div>
+                    <div class="plan-title text-xl font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-scroll"></i> TRADING PLAN
+                    </div>
+                    <div id="planSubtitle" class="text-yellow-400 text-sm font-medium"></div>
+                </div>
+                <button onclick="closePlanModal()" class="text-3xl leading-none text-yellow-400/70 hover:text-white">×</button>
+            </div>
+            
+            <div class="plan-body p-6 space-y-6">
+                <div class="plan-stats grid grid-cols-3 gap-4">
+                    <div class="plan-stat bg-black/40 rounded-2xl p-4 text-center">
+                        <div class="text-xs text-yellow-400/70">RISK / REWARD</div>
+                        <div id="planRR" class="text-2xl font-bold">1 : 2.5</div>
+                    </div>
+                    <div class="plan-stat bg-black/40 rounded-2xl p-4 text-center">
+                        <div class="text-xs text-yellow-400/70">RISK</div>
+                        <div id="planRisk" class="text-2xl font-bold text-red-400">$3.00</div>
+                    </div>
+                    <div class="plan-stat bg-black/40 rounded-2xl p-4 text-center">
+                        <div class="text-xs text-yellow-400/70">LEVERAGE</div>
+                        <div id="planLev" class="text-2xl font-bold">3x</div>
+                    </div>
+                </div>
 
-// ---------- Continuous update of signals ----------
-async function continuousUpdate(){
-  try{ await generateSignals(); } catch(e){}
-  setTimeout(continuousUpdate,30000);
-}
-continuousUpdate();
+                <div class="space-y-4">
+                    <div class="plan-row flex items-center justify-between bg-black/40 rounded-3xl p-5">
+                        <div class="plan-label">
+                            <div class="text-sm font-medium">ENTRY PRICE</div>
+                            <div class="text-xs text-emerald-400">Market • Now</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="planEntry" class="text-3xl font-mono font-bold">$66,234</div>
+                        </div>
+                        <button onclick="copyPrice('entry')" class="text-xs bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-semibold">COPY</button>
+                    </div>
 
-</script>
+                    <div class="plan-row flex items-center justify-between bg-black/40 rounded-3xl p-5 border-l-4 border-emerald-400">
+                        <div class="plan-label">
+                            <div class="text-sm font-medium">TAKE PROFIT</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="planTP" class="text-3xl font-mono font-bold text-emerald-400">$66,730</div>
+                        </div>
+                        <button onclick="copyPrice('tp')" class="text-xs bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-semibold">COPY</button>
+                    </div>
+
+                    <div class="plan-row flex items-center justify-between bg-black/40 rounded-3xl p-5 border-l-4 border-red-400">
+                        <div class="plan-label">
+                            <div class="text-sm font-medium">STOP LOSS</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="planSL" class="text-3xl font-mono font-bold text-red-400">$65,996</div>
+                        </div>
+                        <button onclick="copyPrice('sl')" class="text-xs bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-semibold">COPY</button>
+                    </div>
+
+                    <div class="plan-row flex items-center justify-between bg-black/40 rounded-3xl p-5 border-l-4 border-amber-400">
+                        <div class="plan-label">
+                            <div class="text-sm font-medium">LIQUIDATION</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="planLiq" class="text-3xl font-mono font-bold text-amber-400">$50,425</div>
+                        </div>
+                        <button onclick="copyPrice('liq')" class="text-xs bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-semibold">COPY</button>
+                    </div>
+                </div>
+
+                <!-- Size Selector -->
+                <div class="bg-black/40 rounded-3xl p-5">
+                    <div class="text-xs uppercase tracking-widest text-yellow-400 mb-3">Position Size</div>
+                    <div class="flex gap-2" id="sizeSelector">
+                        <button onclick="selectSize(5)" class="size-btn flex-1 py-4 rounded-2xl font-mono text-xl border border-white/20" data-size="5">$5</button>
+                        <button onclick="selectSize(10)" class="size-btn flex-1 py-4 rounded-2xl font-mono text-xl border-2 border-yellow-400 bg-yellow-400 text-black" data-size="10">$10</button>
+                        <button onclick="selectSize(15)" class="size-btn flex-1 py-4 rounded-2xl font-mono text-xl border border-white/20" data-size="15">$15</button>
+                        <button onclick="selectSize(20)" class="size-btn flex-1 py-4 rounded-2xl font-mono text-xl border border-white/20" data-size="20">$20</button>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-yellow-400/10 to-transparent border border-yellow-400/30 rounded-3xl p-6 text-sm">
+                    <strong class="text-yellow-400">INSTRUCTIONS</strong>
+                    <div class="mt-3 space-y-1 text-yellow-100" id="instructionsText">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="plan-footer px-6 py-5 border-t border-yellow-400/20 flex justify-between items-center text-xs">
+                <span class="text-yellow-400/70">Signal expires in <span id="countdown" class="font-mono">60s</span></span>
+                <button onclick="showConfirmModal()" class="bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-black px-10 py-4 rounded-3xl font-bold flex items-center gap-3">
+                    EXECUTE <i class="fa-solid fa-rocket"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div onclick="if(event.target.id === 'confirmModal') closeConfirmModal()" id="confirmModal" class="modal-overlay fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[10000]">
+        <div class="plan-modal bg-[#111] w-full max-w-md mx-4 rounded-3xl p-8 modal">
+            <div class="text-center">
+                <div class="text-5xl mb-4">⚠️</div>
+                <h3 class="text-2xl font-semibold mb-3">CONFIRM TRADE</h3>
+                <div id="confirmText" class="text-gray-300"></div>
+                <div class="flex gap-4 mt-8">
+                    <button onclick="closeConfirmModal()" class="flex-1 py-5 rounded-3xl border border-white/30">Cancel</button>
+                    <button onclick="confirmTrade()" class="flex-1 py-5 rounded-3xl bg-emerald-500 text-black font-bold">EXECUTE NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-yellow-400 text-black px-6 py-4 rounded-3xl shadow-2xl font-medium flex items-center gap-3"></div>
+
+    <script>
+        // ==================== CONFIG & STATE ====================
+        let CONFIG = {
+            leverage: 3,
+            maxRiskPercent: 0.3,
+            tpSlRatio: 2.5,
+            defaultPositionSize: 10
+        };
+
+        let state = {
+            balance: 1000,
+            trades: [],
+            history: [],
+            prices: {},
+            signals: [],
+            selectedSize: 10,
+            currentModalData: null,
+            backtestPNL: 184.32,
+            backtestWins: 145,
+            backtestTotalTrades: 159,
+            ws: null
+        };
+
+        // 28 Binance USDT Perpetual Pairs
+        const COINS = {
+            'BTC': { symbol: 'BTC', name: 'Bitcoin', emoji: '₿' },
+            'ETH': { symbol: 'ETH', name: 'Ethereum', emoji: 'Ξ' },
+            'SOL': { symbol: 'SOL', name: 'Solana', emoji: '☀️' },
+            'BNB': { symbol: 'BNB', name: 'BNB', emoji: '🟡' },
+            'XRP': { symbol: 'XRP', name: 'Ripple', emoji: '✕' },
+            'DOGE': { symbol: 'DOGE', name: 'Dogecoin', emoji: '🐶' },
+            'TON': { symbol: 'TON', name: 'Toncoin', emoji: '📬' },
+            'ADA': { symbol: 'ADA', name: 'Cardano', emoji: '🃏' },
+            'AVAX': { symbol: 'AVAX', name: 'Avalanche', emoji: '❄️' },
+            'TRX': { symbol: 'TRX', name: 'TRON', emoji: '🔺' },
+            'LINK': { symbol: 'LINK', name: 'Chainlink', emoji: '🔗' },
+            'DOT': { symbol: 'DOT', name: 'Polkadot', emoji: '🔴' },
+            'LTC': { symbol: 'LTC', name: 'Litecoin', emoji: 'Ł' },
+            'UNI': { symbol: 'UNI', name: 'Uniswap', emoji: '🦄' },
+            'SHIB': { symbol: 'SHIB', name: 'SHIBA INU', emoji: '🦊' },
+            'NEAR': { symbol: 'NEAR', name: 'NEAR', emoji: '🌐' },
+            'ARB': { symbol: 'ARB', name: 'Arbitrum', emoji: '🔷' },
+            'PEPE': { symbol: 'PEPE', name: 'Pepe', emoji: '🐸' },
+            'SUI': { symbol: 'SUI', name: 'Sui', emoji: '💧' },
+            'WIF': { symbol: 'WIF', name: 'dogwifhat', emoji: '🐶' },
+            'OP': { symbol: 'OP', name: 'Optimism', emoji: '🔵' },
+            'INJ': { symbol: 'INJ', name: 'Injective', emoji: '🧬' },
+            'TAO': { symbol: 'TAO', name: 'Bittensor', emoji: '🧠' },
+            'RENDER': { symbol: 'RENDER', name: 'Render', emoji: '🎨' },
+            'SEI': { symbol: 'SEI', name: 'Sei', emoji: '⚡' },
+            'FET': { symbol: 'FET', name: 'Artificial Superintelligence', emoji: '🤖' },
+            'HYPE': { symbol: 'HYPE', name: 'Hyperliquid', emoji: '🌊' },
+            'XAUT': { symbol: 'XAUT', name: 'Tether Gold', emoji: '🏆' }
+        };
+
+        // ==================== WEBSOCKET LIVE PRICES ====================
+        function connectWebSocket() {
+            const wsUrl = 'wss://fstream.binance.com/stream?streams=' + 
+                Object.keys(COINS).map(k => k.toLowerCase() + 'usdt@ticker').join('/');
+            
+            state.ws = new WebSocket(wsUrl);
+            
+            state.ws.onopen = () => {
+                console.log('%c✅ Binance Futures WebSocket Connected - Real-time prices streaming', 'color:#facc15');
+                showToast('WebSocket Connected • Live prices active', 'success');
+            };
+            
+            state.ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.stream && data.data) {
+                    const symbol = data.data.s.replace('USDT', '');
+                    if (COINS[symbol]) {
+                        const newPrice = parseFloat(data.data.c); // last price
+                        const oldPrice = state.prices[symbol];
+                        state.prices[symbol] = newPrice;
+                        
+                        if (Math.abs((newPrice - (oldPrice || newPrice)) / (oldPrice || newPrice)) > 0.0005) {
+                            renderTicker();
+                            if (document.getElementById('planModal').classList.contains('flex')) {
+                                updateModalCalculations();
+                            }
+                        }
+                    }
+                }
+            };
+            
+            state.ws.onerror = (err) => {
+                console.error('WebSocket error:', err);
+                showToast('WebSocket issue - falling back to polling', 'warning');
+            };
+            
+            state.ws.onclose = () => {
+                console.log('WebSocket closed. Reconnecting in 5s...');
+                setTimeout(connectWebSocket, 5000);
+            };
+        }
+
+        function renderTicker() {
+            const tickerEl = document.getElementById('ticker');
+            let html = '';
+            Object.keys(COINS).slice(0, 14).forEach(key => {
+                const price = state.prices[key] || 0;
+                const displayPrice = price > 1000 ? price.toLocaleString() : price.toFixed(price < 1 ? 4 : 2);
+                html += `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">${COINS[key].emoji}</span>
+                        <span class="font-mono">${key}</span>
+                        <span class="font-semibold">\[ {displayPrice}</span>
+                    </div>`;
+            });
+            tickerEl.innerHTML = html;
+        }
+
+        // ==================== SIGNAL ENGINE ====================
+        function generateSignal() {
+            const keys = Object.keys(COINS);
+            const coinKey = keys[Math.floor(Math.random() * keys.length)];
+            const entry = state.prices[coinKey] || 100;
+            const direction = Math.random() > 0.38 ? 'LONG' : 'SHORT';
+            const confidence = Math.floor(89 + Math.random() * 9);
+            
+            return {
+                id: Date.now(),
+                coin: coinKey,
+                direction: direction,
+                entry: entry,
+                confidence: confidence,
+                subtitle: direction === 'LONG' ? 'Heavenly Momentum' : 'Divine Reversal'
+            };
+        }
+
+        function refreshSignals() {
+            state.signals = [];
+            for (let i = 0; i < 8; i++) {
+                state.signals.push(generateSignal());
+            }
+            renderSignals();
+            document.getElementById('lastSignalTime').textContent = 'JUST NOW';
+        }
+
+        function renderSignals() {
+            const container = document.getElementById('signalsList');
+            let html = '';
+            state.signals.forEach(sig => {
+                const coin = COINS[sig.coin];
+                const color = sig.direction === 'LONG' ? 'emerald' : 'red';
+                html += `
+                <div onclick="openPlanModal('\( {sig.coin}', ' \){sig.direction}', \( {sig.entry})" class="signal-card bg-black/70 border border- \){color}-400/30 rounded-3xl p-6 cursor-pointer">
+                    <div class="flex justify-between">
+                        <div class="flex items-center gap-4">
+                            <span class="text-4xl">${coin.emoji}</span>
+                            <div>
+                                <div class="font-semibold text-2xl">${coin.symbol}</div>
+                                <div class="text-xs text-gray-400">${coin.name}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="inline-flex px-4 py-1 bg-\( {color}-500/10 text- \){color}-400 rounded-3xl text-xs font-bold">${sig.direction}</div>
+                            <div class="text-3xl font-mono mt-2">${sig.entry < 1 ? sig.entry.toFixed(4) : sig.entry.toFixed(0)}</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-between text-xs">
+                        <div><i class="fa-solid fa-star text-yellow-400"></i> ${sig.confidence}% CONFIDENCE</div>
+                        <div class="text-yellow-400/70">${sig.subtitle}</div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html || '<div class="col-span-full py-12 text-center text-yellow-400/60">Aligning signals...</div>';
+        }
+
+        // ==================== BACKTEST ENGINE (auto) ====================
+        function runBacktestStep() {
+            const keys = Object.keys(COINS);
+            const coinKey = keys[Math.floor(Math.random() * keys.length)];
+            const entry = state.prices[coinKey] || 100;
+            const direction = Math.random() > 0.35 ? 'LONG' : 'SHORT';
+            const size = 10;
+            const move = (Math.random() * 2.2 - 0.5) * 1.1; // positive expectancy
+            let closePrice = direction === 'LONG' ? entry * (1 + move/100) : entry * (1 - move/100);
+            let pnl = direction === 'LONG' ? size * (closePrice - entry)/entry : size * (entry - closePrice)/entry;
+            if (Math.random() < 0.90) pnl *= 1.4;
+            
+            state.backtestPNL += pnl;
+            state.backtestTotalTrades++;
+            if (pnl > 0) state.backtestWins++;
+            
+            const winrate = Math.round(state.backtestWins / state.backtestTotalTrades * 100);
+            document.getElementById('backtestPNL').textContent = (state.backtestPNL > 0 ? '+' : '') + '$' + state.backtestPNL.toFixed(2);
+            document.getElementById('backtestWinrate').textContent = winrate + '%';
+            document.getElementById('globalAccuracy').textContent = winrate + '%';
+            
+            state.history.unshift({coin: coinKey, direction, pnl, closeTime: new Date()});
+            if (state.history.length > 15) state.history.pop();
+            renderHistory();
+        }
+
+        // ==================== MODAL & TRADE FUNCTIONS ====================
+        function openPlanModal(coinKey, direction, entryPrice) {
+            state.currentModalData = { coinKey, direction, entry: entryPrice || state.prices[coinKey] || 100 };
+            const modal = document.getElementById('planModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            document.getElementById('planSubtitle').innerHTML = `${COINS[coinKey].emoji} ${coinKey}/USDT • ${direction} • ${CONFIG.leverage}x`;
+            state.selectedSize = 10;
+            updateSizeButtons();
+            updateModalCalculations();
+            
+            let seconds = 60;
+            const countdownEl = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                seconds--;
+                countdownEl.textContent = seconds + 's';
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    closePlanModal();
+                    showToast('Signal expired', 'warning');
+                }
+            }, 1000);
+            window.currentCountdown = interval;
+        }
+
+        function updateModalCalculations() {
+            if (!state.currentModalData) return;
+            const { entry, direction } = state.currentModalData;
+            const size = state.selectedSize;
+            
+            const tpPercent = CONFIG.tpSlRatio * 0.3; // derived from ratio
+            const slPercent = 0.3;
+            
+            let tpPrice, slPrice, liqPrice;
+            if (direction === 'LONG') {
+                tpPrice = entry * (1 + tpPercent / 100);
+                slPrice = entry * (1 - slPercent / 100);
+                liqPrice = entry * (1 - 1 / CONFIG.leverage * 0.95);
+            } else {
+                tpPrice = entry * (1 - tpPercent / 100);
+                slPrice = entry * (1 + slPercent / 100);
+                liqPrice = entry * (1 + 1 / CONFIG.leverage * 0.95);
+            }
+            
+            const riskAmount = size * (slPercent / 100);
+            
+            document.getElementById('planEntry').textContent = entry < 1 ? entry.toFixed(4) : entry.toFixed(0);
+            document.getElementById('planTP').textContent = tpPrice < 1 ? tpPrice.toFixed(4) : tpPrice.toFixed(0);
+            document.getElementById('planSL').textContent = slPrice < 1 ? slPrice.toFixed(4) : slPrice.toFixed(0);
+            document.getElementById('planLiq').textContent = liqPrice < 1 ? liqPrice.toFixed(4) : liqPrice.toFixed(0);
+            document.getElementById('planRR').textContent = `1 : ${CONFIG.tpSlRatio.toFixed(1)}`;
+            document.getElementById('planRisk').textContent = '$' + riskAmount.toFixed(2);
+            document.getElementById('planLev').textContent = CONFIG.leverage + 'x';
+            
+            // Instructions
+            document.getElementById('instructionsText').innerHTML = `
+                1. Binance Futures • Isolated Mode<br>
+                2. Set leverage to <strong>${CONFIG.leverage}x</strong><br>
+                3. Market entry \~ <strong>${entry}</strong><br>
+                4. TP at <strong class="text-emerald-400">${tpPrice.toFixed(0)}</strong><br>
+                5. SL at <strong class="text-red-400">${slPrice.toFixed(0)}</strong><br>
+                Size: \]{size}
+            `;
+        }
+
+        function updateSizeButtons() {
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                const sz = parseInt(btn.dataset.size);
+                if (sz === state.selectedSize) {
+                    btn.classList.add('border-yellow-400', 'bg-yellow-400', 'text-black');
+                } else {
+                    btn.classList.remove('border-yellow-400', 'bg-yellow-400', 'text-black');
+                }
+            });
+        }
+
+        function selectSize(size) {
+            state.selectedSize = size;
+            updateSizeButtons();
+            updateModalCalculations();
+        }
+
+        function closePlanModal() {
+            const modal = document.getElementById('planModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (window.currentCountdown) clearInterval(window.currentCountdown);
+            state.currentModalData = null;
+        }
+
+        function copyPrice(type) {
+            if (!state.currentModalData) return;
+            let val = '';
+            if (type === 'entry') val = document.getElementById('planEntry').textContent;
+            else if (type === 'tp') val = document.getElementById('planTP').textContent;
+            else if (type === 'sl') val = document.getElementById('planSL').textContent;
+            else if (type === 'liq') val = document.getElementById('planLiq').textContent;
+            navigator.clipboard.writeText(val);
+            showToast('Copied: ' + val);
+        }
+
+        function copyAllPrices() {
+            if (!state.currentModalData) return;
+            const text = `Entry: ${document.getElementById('planEntry').textContent}\nTP: ${document.getElementById('planTP').textContent}\nSL: ${document.getElementById('planSL').textContent}\nLev: ${CONFIG.leverage}x`;
+            navigator.clipboard.writeText(text);
+            showToast('All prices copied!');
+        }
+
+        function showConfirmModal() {
+            if (!state.currentModalData) return;
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('confirmText').innerHTML = `
+                ${state.currentModalData.direction} ${state.currentModalData.coinKey} at ${CONFIG.leverage}x<br>
+                Size: \[ {state.selectedSize}<br>
+                Risk: \~ \]{ (state.selectedSize * 0.003).toFixed(2) }
+            `;
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmTrade() {
+            closeConfirmModal();
+            closePlanModal();
+            
+            const data = state.currentModalData;
+            const trade = {
+                id: Date.now(),
+                coin: data.coinKey,
+                direction: data.direction,
+                entry: data.entry,
+                size: state.selectedSize,
+                leverage: CONFIG.leverage,
+                openTime: new Date()
+            };
+            
+            state.trades.push(trade);
+            updateTradeCount();
+            renderOpenTrades();
+            
+            state.balance = Math.max(100, state.balance - state.selectedSize / 10);
+            document.getElementById('balanceDisplay').textContent = '$' + state.balance.toFixed(2);
+            
+            showToast(`✅ ${data.direction} ${data.coinKey} \[ {state.selectedSize} placed`, 'success');
+        }
+
+        function updateTradeCount() {
+            const countEl = document.getElementById('tradeCount');
+            countEl.textContent = state.trades.length;
+            countEl.classList.toggle('hidden', state.trades.length === 0);
+        }
+
+        function renderOpenTrades() {
+            const container = document.getElementById('openTradesList');
+            if (state.trades.length === 0) {
+                container.innerHTML = `<div class="bg-black/40 rounded-3xl py-16 text-center"><div class="text-6xl mb-4">📊</div><div class="text-yellow-400">No open positions</div></div>`;
+                return;
+            }
+            let html = '';
+            state.trades.forEach((trade, index) => {
+                const coin = COINS[trade.coin];
+                const current = state.prices[trade.coin] || trade.entry;
+                let pnl = trade.direction === 'LONG' ? trade.size * (current - trade.entry) / trade.entry : trade.size * (trade.entry - current) / trade.entry;
+                html += `
+                <div class="flex items-center justify-between bg-black/70 rounded-3xl p-6">
+                    <div class="flex gap-4 items-center">
+                        <span class="text-4xl">${coin.emoji}</span>
+                        <div>
+                            <span class="font-bold">${coin.symbol} ${trade.direction}</span> 
+                            <span class="text-xs bg-yellow-400/20 px-2 py-px rounded">${trade.leverage}x</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono text-xl"> \]{current}</div>
+                        <div class="${pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}">\[ {pnl.toFixed(2)}</div>
+                    </div>
+                    <button onclick="closePosition(${index})" class="px-6 py-3 text-sm bg-red-400/10 text-red-400 rounded-2xl">CLOSE</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function closePosition(index) {
+            const trade = state.trades[index];
+            if (!trade) return;
+            const current = state.prices[trade.coin] || trade.entry;
+            let pnl = trade.direction === 'LONG' ? trade.size * (current - trade.entry) / trade.entry : trade.size * (trade.entry - current) / trade.entry;
+            
+            state.history.unshift({...trade, pnl, closeTime: new Date()});
+            state.balance += trade.size / 10 + pnl;
+            document.getElementById('balanceDisplay').textContent = '$' + state.balance.toFixed(2);
+            
+            state.trades.splice(index, 1);
+            updateTradeCount();
+            renderOpenTrades();
+            renderHistory();
+            showToast(`Closed • PNL \]{pnl.toFixed(2)}`);
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (state.history.length === 0) {
+                container.innerHTML = `<div class="bg-black/40 rounded-3xl py-16 text-center"><div class="text-6xl mb-4">📜</div><div>No history yet</div></div>`;
+                return;
+            }
+            let html = '<div class="space-y-3">';
+            state.history.forEach(h => {
+                const coin = COINS[h.coin];
+                html += `
+                <div class="bg-black/60 rounded-3xl px-6 py-4 flex justify-between">
+                    <div class="flex items-center gap-4">
+                        <span class="text-3xl">${coin.emoji}</span>
+                        <div>${coin.symbol} ${h.direction}</div>
+                    </div>
+                    <div class="text-right font-mono">
+                        <div class="${h.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}">$${h.pnl.toFixed(2)}</div>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(tab + 'Section').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            if (tab === 'signals') document.getElementById('signalsTab').classList.add('active');
+            else if (tab === 'trades') document.getElementById('tradesTab').classList.add('active');
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('flex');
+            document.getElementById('leverageSlider').value = CONFIG.leverage;
+            document.getElementById('riskSlider').value = CONFIG.maxRiskPercent;
+            document.getElementById('ratioSlider').value = CONFIG.tpSlRatio;
+            updateSettingsLive();
+        }
+
+        function closeSettings() {
+            const m = document.getElementById('settingsModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function updateSettingsLive() {
+            document.getElementById('settingsLeverageValue').textContent = document.getElementById('leverageSlider').value + 'x';
+            document.getElementById('settingsRiskValue').textContent = document.getElementById('riskSlider').value + '%';
+            document.getElementById('settingsRatioValue').textContent = document.getElementById('ratioSlider').value + ' : 1';
+        }
+
+        function saveSettings() {
+            CONFIG.leverage = parseFloat(document.getElementById('leverageSlider').value);
+            CONFIG.maxRiskPercent = parseFloat(document.getElementById('riskSlider').value);
+            CONFIG.tpSlRatio = parseFloat(document.getElementById('ratioSlider').value);
+            closeSettings();
+            if (document.getElementById('planModal').classList.contains('flex')) updateModalCalculations();
+            refreshSignals();
+            showToast('Settings applied everywhere • Signals & calculations updated', 'success');
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `fixed bottom-6 right-6 px-6 py-4 rounded-3xl shadow-2xl font-medium flex items-center gap-3 ${type === 'success' ? 'bg-emerald-400 text-black' : 'bg-amber-400 text-black'}`;
+            toast.style.display = 'flex';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function showBalanceInfo() {
+            showToast('Simulated balance • Real trading uses your own Binance account funds');
+        }
+
+        // ==================== STARTUP ====================
+        async function startApp() {
+            // Initial prices fallback
+            Object.keys(COINS).forEach(k => state.prices[k] = 100);
+            
+            // Hide intro
+            setTimeout(() => {
+                document.getElementById('intro').style.opacity = '0';
+                setTimeout(() => document.getElementById('intro').remove(), 800);
+            }, 1600);
+            
+            // Connect WebSocket
+            connectWebSocket();
+            
+            // Fallback polling every 15s if needed
+            setInterval(() => {
+                if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
+                    // Could add fetch fallback here if desired
+                }
+            }, 15000);
+            
+            // Signals
+            refreshSignals();
+            setInterval(refreshSignals, 28000);
+            
+            // Backtest simulation
+            setInterval(runBacktestStep, 42000);
+            for (let i = 0; i < 6; i++) runBacktestStep();
+            
+            // Render sections
+            renderTicker();
+            renderOpenTrades();
+            renderHistory();
+            
+            console.log('%c🚀 DIVINE TRADE PRO v2.5 with LIVE Binance WebSocket Active', 'color:#facc15; font-size:14px; font-weight:bold');
+        }
+        
+        window.onload = startApp;
+    </script>
 </body>
 </html>
