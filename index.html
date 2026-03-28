@@ -17,38 +17,22 @@
         .star { position: absolute; background: white; border-radius: 50%; animation: fly linear infinite; }
         @keyframes fly { from { transform: translateY(100vh) scale(0.5); opacity: 0.8; } to { transform: translateY(-100vh) scale(1); opacity: 0; } }
         
-        .logo { font-family: 'Playfair Display', serif; letter-spacing: 4px; }
-        .signal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .signal-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgb(250 204 21 / 0.2); }
+        .logo { font-family: 'Playfair Display', serif; letter-spacing: 3px; font-size: 1.75rem; }
         
-        .top-signal {
-            position: relative;
-            border: 2px solid #facc15;
-            box-shadow: 0 0 20px #facc15;
-        }
+        .signal-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .signal-card:hover { transform: translateY(-2px); }
         
-        .glow-cross {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 22px;
-            color: #facc15;
-            text-shadow: 
-                0 0 10px #facc15,
-                0 0 20px #facc15,
-                0 0 30px #facc15;
-            z-index: 10;
-            animation: crossGlow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes crossGlow {
-            from { text-shadow: 0 0 8px #facc15, 0 0 15px #facc15; }
-            to { text-shadow: 0 0 15px #facc15, 0 0 30px #facc15, 0 0 45px #facc15; }
-        }
+        .top-signal { position: relative; border: 2px solid #facc15; box-shadow: 0 0 20px #facc15; }
+        .glow-cross { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 24px; color: #facc15; text-shadow: 0 0 10px #facc15, 0 0 20px #facc15, 0 0 35px #facc15; z-index: 10; animation: crossGlow 1.8s ease-in-out infinite alternate; }
+        @keyframes crossGlow { from { text-shadow: 0 0 8px #facc15, 0 0 18px #facc15; } to { text-shadow: 0 0 15px #facc15, 0 0 30px #facc15, 0 0 45px #facc15; } }
         
         .modal { animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         @keyframes modalPop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        /* Samsung S21 optimizations - tight mobile-first */
+        .tab-button { font-size: 0.95rem; padding: 0.85rem 0.5rem; }
+        .section { padding: 0.75rem; }
+        .signal-card { padding: 1rem; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -57,197 +41,167 @@
     <div id="loading" class="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
         <div class="starfield" id="starfield"></div>
         <div class="text-center z-10">
-            <div class="logo text-6xl font-bold text-yellow-400 tracking-widest mb-3">DIVINETRADE</div>
-            <div class="text-white/70 text-sm tracking-[6px] mb-10">PRO TRADING COMMAND</div>
-            <div class="w-72 h-1 bg-white/10 rounded-full overflow-hidden">
+            <div class="logo text-5xl font-bold text-yellow-400 tracking-widest mb-3">DIVINETRADE</div>
+            <div class="text-white/70 text-xs tracking-[4px] mb-8">PRO TRADING COMMAND</div>
+            <div class="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
                 <div class="loading-bar h-full w-0 bg-gradient-to-r from-yellow-400 to-white"></div>
             </div>
-            <p class="text-yellow-400/70 text-xs mt-6 tracking-widest">INITIALIZING...</p>
+            <p class="text-yellow-400/70 text-xs mt-5 tracking-widest">CONNECTING TO BINANCE...</p>
         </div>
     </div>
 
     <!-- MAIN APP -->
     <div id="app" class="hidden">
-        <!-- HEADER -->
-        <div class="bg-black border-b border-yellow-400/30 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-yellow-400 rounded-2xl flex items-center justify-center text-black text-2xl">👑</div>
+        <!-- HEADER - compact for S21 -->
+        <div class="bg-black border-b border-yellow-400/30 px-3 py-3 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-yellow-400 rounded-2xl flex items-center justify-center text-black text-xl">👑</div>
                 <div>
-                    <div class="logo text-2xl font-bold text-yellow-400 tracking-widest">DIVINETRADE</div>
-                    <div class="flex items-center gap-2 text-xs">
-                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span class="text-green-400 font-medium">LIVE</span>
-                        <span id="liveTime" class="text-white/70 font-mono">11:24:19</span>
+                    <div class="logo text-xl font-bold text-yellow-400 tracking-widest">DIVINETRADE</div>
+                    <div class="flex items-center gap-1.5 text-[10px]">
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-green-400">LIVE</span>
+                        <span id="liveTime" class="text-white/70 font-mono"></span>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-4 py-1 rounded-3xl">BULLISH</div>
-                <div class="bg-yellow-400/10 text-yellow-400 px-5 py-1 rounded-3xl font-mono text-sm flex items-center gap-1">
-                    <i class="fa-solid fa-wallet"></i> $100.00
+            <div class="flex items-center gap-2">
+                <div class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-3xl">BULLISH</div>
+                <div class="bg-yellow-400/10 text-yellow-400 px-3 py-1 rounded-3xl font-mono text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-wallet"></i> $100
                 </div>
-                <button class="text-2xl">📊</button>
             </div>
         </div>
 
-        <!-- TABS -->
-        <div class="flex border-b border-white/10 bg-black/80 text-sm font-medium overflow-x-auto">
-            <button onclick="switchTab(0)" class="tab-button active flex-1 py-4 flex items-center justify-center gap-2" id="tab0">
-                <i class="fa-solid fa-star"></i> Signals <span class="bg-yellow-400 text-black text-[10px] px-2 py-px rounded-full font-medium">38</span>
+        <!-- TABS - compact -->
+        <div class="flex border-b border-white/10 bg-black/80 text-xs font-medium overflow-x-auto">
+            <button onclick="switchTab(0)" class="tab-button active flex-1 py-3 flex items-center justify-center gap-1.5" id="tab0">
+                <i class="fa-solid fa-star"></i> Signals <span class="bg-yellow-400 text-black text-[9px] px-1.5 py-px rounded">38</span>
             </button>
-            <button onclick="switchTab(1)" class="tab-button flex-1 py-4 flex items-center justify-center gap-2" id="tab1">
-                <i class="fa-solid fa-chart-line"></i> Positions <span class="text-white/50 text-xs">0</span>
+            <button onclick="switchTab(1)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5" id="tab1">
+                <i class="fa-solid fa-chart-line"></i> Positions
             </button>
-            <button onclick="switchTab(2)" class="tab-button flex-1 py-4 flex items-center justify-center gap-2" id="tab2">
-                <i class="fa-solid fa-clock-rotate-left"></i> History <span class="text-white/50 text-xs">0</span>
+            <button onclick="switchTab(2)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5" id="tab2">
+                <i class="fa-solid fa-clock-rotate-left"></i> History
             </button>
-            <button onclick="switchTab(3)" class="tab-button flex-1 py-4 flex items-center justify-center gap-2 text-yellow-400" id="tab3">
+            <button onclick="switchTab(3)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5 text-yellow-400" id="tab3">
                 <i class="fa-solid fa-crown"></i> GOD
             </button>
         </div>
 
-        <!-- SIGNALS SECTION -->
-        <div id="section0" class="section p-4">
-            <!-- Filters -->
-            <div class="flex gap-2 mb-5">
-                <input id="searchInput" type="text" placeholder="Search pairs..." class="flex-1 bg-white/5 border border-white/20 rounded-2xl px-5 py-3 text-sm focus:outline-none">
-                <button onclick="filterSignals('ALL')" class="filter-btn active px-6 rounded-2xl text-sm font-medium">ALL</button>
-                <button onclick="filterSignals('LONG')" class="filter-btn px-6 rounded-2xl text-sm font-medium">LONG</button>
-                <button onclick="filterSignals('SHORT')" class="filter-btn px-6 rounded-2xl text-sm font-medium">SHORT</button>
+        <!-- SIGNALS SECTION - optimized spacing -->
+        <div id="section0" class="section p-3">
+            <!-- Filters - tighter -->
+            <div class="flex gap-1.5 mb-4">
+                <input id="searchInput" type="text" placeholder="Search..." class="flex-1 bg-white/5 border border-white/20 rounded-2xl px-4 py-2.5 text-sm focus:outline-none">
+                <button onclick="filterSignals('ALL')" class="filter-btn active px-5 rounded-2xl text-xs font-medium">ALL</button>
+                <button onclick="filterSignals('LONG')" class="filter-btn px-5 rounded-2xl text-xs font-medium">LONG</button>
+                <button onclick="filterSignals('SHORT')" class="filter-btn px-5 rounded-2xl text-xs font-medium">SHORT</button>
             </div>
 
-            <!-- Amount -->
+            <!-- Amount buttons - smaller, scrollable if needed -->
+            <div class="mb-4">
+                <div class="text-[10px] text-white/60 mb-1.5 px-1">AMOUNT</div>
+                <div class="flex gap-1.5 flex-wrap" id="amountButtons"></div>
+            </div>
+
+            <!-- Leverage - tighter -->
             <div class="mb-5">
-                <div class="text-xs text-white/60 mb-2 px-1">AMOUNT</div>
-                <div class="flex gap-2 flex-wrap" id="amountButtons"></div>
+                <div class="text-[10px] text-white/60 mb-1.5 px-1">LEVERAGE</div>
+                <div class="flex gap-1.5 flex-wrap" id="leverageButtons"></div>
             </div>
 
-            <!-- Leverage -->
-            <div class="mb-6">
-                <div class="text-xs text-white/60 mb-2 px-1">LEVERAGE</div>
-                <div class="flex gap-2 flex-wrap" id="leverageButtons"></div>
+            <!-- Top 3 -->
+            <div class="mb-2 text-[10px] font-medium text-yellow-400 flex items-center gap-1.5 px-1">
+                <i class="fa-solid fa-trophy"></i> TOP 3 HIGHEST WINRATE
             </div>
+            <div id="topSignals" class="grid grid-cols-3 gap-2 mb-6"></div>
 
-            <!-- Top 3 Highest Winrate Signals with glowing cross -->
-            <div class="mb-3 text-xs font-medium text-yellow-400 flex items-center gap-2 px-1">
-                <i class="fa-solid fa-trophy"></i> TOP 3 HIGHEST WINRATE (updates every 60s)
-            </div>
-            <div id="topSignals" class="grid grid-cols-3 gap-3 mb-8"></div>
-
-            <!-- All Signals -->
-            <div id="signalsList" class="space-y-4"></div>
+            <!-- All signals -->
+            <div id="signalsList" class="space-y-3"></div>
         </div>
 
-        <!-- Other sections -->
-        <div id="section1" class="section p-4 hidden">No open positions yet.</div>
-        <div id="section2" class="section p-4 hidden">Trade history will appear here.</div>
-
-        <!-- GOD TAB -->
-        <div id="section3" class="section p-4 hidden">
-            <div class="max-w-xl mx-auto">
-                <h2 class="text-3xl font-semibold mb-2 flex items-center gap-3"><i class="fa-solid fa-crown text-yellow-400"></i> GOD MODE</h2>
-                <p class="text-yellow-400/70 text-sm mb-6">Enter CAD amount → Get highest-winrate signals</p>
+        <!-- GOD TAB - compact -->
+        <div id="section3" class="section p-3 hidden">
+            <div class="max-w-full">
+                <h2 class="text-2xl font-semibold mb-1 flex items-center gap-2"><i class="fa-solid fa-crown text-yellow-400"></i> GOD MODE</h2>
+                <p class="text-yellow-400/70 text-xs mb-4">Enter CAD → High-winrate signals</p>
                 
-                <div class="bg-white/5 border border-yellow-400/30 rounded-3xl p-8 mb-8">
-                    <label class="block text-xs uppercase tracking-widest mb-3 text-white/60">CAD AMOUNT TO DEPLOY</label>
-                    <div class="flex items-center gap-4">
-                        <input id="godAmountInput" type="number" value="1000" class="flex-1 bg-transparent text-6xl font-mono outline-none">
-                        <button onclick="generateGodSignals()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-bold px-10 py-5 rounded-3xl text-xl">DEPLOY</button>
+                <div class="bg-white/5 border border-yellow-400/30 rounded-3xl p-5 mb-6">
+                    <label class="block text-[10px] uppercase tracking-widest mb-2 text-white/60">CAD TO DEPLOY</label>
+                    <div class="flex items-center gap-3">
+                        <input id="godAmountInput" type="number" value="1000" class="flex-1 bg-transparent text-4xl font-mono outline-none">
+                        <button onclick="generateGodSignals()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-bold px-8 py-3 rounded-3xl text-sm">DEPLOY</button>
                     </div>
                 </div>
                 
-                <div id="godResults" class="space-y-6"></div>
+                <div id="godResults" class="space-y-4"></div>
             </div>
         </div>
     </div>
 
-    <!-- TRADING PLAN MODAL -->
+    <!-- TRADING PLAN MODAL - compact for mobile -->
     <div onclick="if(event.target.id === 'planModal') closePlanModal()" id="planModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[9999]">
-        <div class="bg-zinc-950 w-full max-w-md mx-4 rounded-3xl overflow-hidden modal">
-            <div class="px-6 pt-5 pb-4 border-b flex justify-between">
+        <div class="bg-zinc-950 w-full max-w-[380px] mx-3 rounded-3xl overflow-hidden modal">
+            <div class="px-5 pt-4 pb-3 border-b flex justify-between">
                 <div class="flex items-center gap-3">
                     <span id="modalEmoji" class="text-3xl"></span>
                     <div>
-                        <div id="modalCoinName" class="font-bold text-xl"></div>
-                        <div id="modalSubtitleLine" class="text-emerald-400 text-sm"></div>
+                        <div id="modalCoinName" class="font-bold"></div>
+                        <div id="modalSubtitleLine" class="text-emerald-400 text-xs"></div>
                     </div>
                 </div>
-                <button onclick="closePlanModal()" class="text-4xl text-white/40">×</button>
+                <button onclick="closePlanModal()" class="text-3xl text-white/50">×</button>
             </div>
             
-            <div class="p-6 space-y-6">
-                <div class="bg-emerald-900/30 rounded-2xl p-5 text-center">
-                    <div class="text-xs tracking-widest text-emerald-400">POTENTIAL PROFIT</div>
-                    <div id="modalProfitBig" class="text-5xl font-bold text-emerald-400"></div>
-                    <div id="modalProfitDetail" class="text-xs text-white/60"></div>
+            <div class="p-5 space-y-5 text-sm">
+                <div class="bg-emerald-900/30 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-emerald-400">POTENTIAL PROFIT</div>
+                    <div id="modalProfitBig" class="text-4xl font-bold text-emerald-400"></div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="bg-zinc-900 rounded-2xl p-4">
-                        <div class="text-xs text-white/60">Win Prob</div>
-                        <div id="modalWinProb" class="text-3xl font-bold text-emerald-400"></div>
-                    </div>
-                    <div class="bg-zinc-900 rounded-2xl p-4">
-                        <div class="text-xs text-white/60">R:R</div>
-                        <div id="modalRR" class="text-3xl font-bold text-yellow-400"></div>
-                    </div>
-                    <div class="bg-zinc-900 rounded-2xl p-4">
-                        <div class="text-xs text-white/60">Confidence</div>
-                        <div id="modalConfidence" class="text-3xl font-bold text-yellow-400"></div>
-                    </div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">Win Prob</div><div id="modalWinProb" class="text-2xl font-bold text-emerald-400"></div></div>
+                    <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">R:R</div><div id="modalRR" class="text-2xl font-bold text-yellow-400"></div></div>
+                    <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">Conf</div><div id="modalConfidence" class="text-2xl font-bold text-yellow-400"></div></div>
                 </div>
                 
-                <div class="space-y-5 text-sm">
-                    <div class="flex justify-between items-center">
-                        <div>Entry Price<br><span class="text-xs text-white/50">Market Order</span></div>
-                        <div id="modalEntry" class="font-mono text-lg"></div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>Take Profit<br><span class="text-xs text-white/50">Limit Order (GTC)</span></div>
-                        <div id="modalTP" class="font-mono text-lg text-emerald-400"></div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>Stop Loss<br><span class="text-xs text-white/50">Stop Market</span></div>
-                        <div id="modalSL" class="font-mono text-lg text-red-400"></div>
-                    </div>
-                </div>
-                
-                <div class="bg-zinc-900 rounded-2xl p-5 text-xs">
-                    <div class="font-semibold text-yellow-400 mb-3">QUICK STEPS</div>
-                    <div id="modalSteps" class="space-y-2 text-white/80"></div>
+                <div class="space-y-4 text-xs">
+                    <div class="flex justify-between"><div>Entry</div><div id="modalEntry" class="font-mono"></div></div>
+                    <div class="flex justify-between"><div>Take Profit</div><div id="modalTP" class="font-mono text-emerald-400"></div></div>
+                    <div class="flex justify-between"><div>Stop Loss</div><div id="modalSL" class="font-mono text-red-400"></div></div>
                 </div>
             </div>
             
-            <div class="p-4 flex gap-3 border-t border-white/10">
-                <button onclick="closePlanModal()" class="flex-1 py-4 border border-white/30 rounded-2xl">Close</button>
-                <button onclick="executeFromModal()" class="flex-1 py-4 bg-yellow-400 text-black font-bold rounded-2xl">BUY NOW</button>
+            <div class="p-3 flex gap-2 border-t border-white/10">
+                <button onclick="closePlanModal()" class="flex-1 py-3 border border-white/30 rounded-2xl text-sm">Close</button>
+                <button onclick="executeFromModal()" class="flex-1 py-3 bg-yellow-400 text-black font-bold rounded-2xl text-sm">BUY NOW</button>
             </div>
         </div>
     </div>
 
     <!-- TOAST -->
-    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-yellow-400 text-black px-8 py-4 rounded-3xl shadow-2xl font-medium text-center"></div>
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-yellow-400 text-black px-6 py-3 rounded-3xl shadow-2xl font-medium text-sm text-center max-w-[280px]"></div>
 
     <script>
         let CONFIG = { amount: 10, leverage: 5 };
-        let state = { prices: {}, priceHistory: {}, signals: [], history: [], balance: 100 };
+        let state = { prices: {}, priceHistory: {}, signals: [] };
 
         const COINS = {
-            'TRX': {emoji:'🔺', name:'TRON'}, 'XRP': {emoji:'✕', name:'XRP'}, 
-            'BTC': {emoji:'₿', name:'Bitcoin'}, 'ETH': {emoji:'Ξ', name:'Ethereum'}, 
-            'SOL': {emoji:'☀️', name:'Solana'}, 'DOGE': {emoji:'🐶', name:'Dogecoin'}
+            'BTC': {emoji:'₿', name:'Bitcoin'}, 'ETH': {emoji:'Ξ', name:'Ethereum'}, 'SOL': {emoji:'☀️', name:'Solana'},
+            'TRX': {emoji:'🔺', name:'TRON'}, 'XRP': {emoji:'✕', name:'XRP'}, 'DOGE': {emoji:'🐶', name:'Dogecoin'}
         };
 
         function createStarfield() {
             const container = document.getElementById('starfield');
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                const size = Math.random() * 3 + 0.8;
+                const size = Math.random() * 2.5 + 0.8;
                 star.style.width = star.style.height = `${size}px`;
                 star.style.left = `${Math.random() * 100}vw`;
-                star.style.animationDuration = `${Math.random() * 4 + 2}s`;
-                star.style.animationDelay = `-${Math.random() * 6}s`;
+                star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                star.style.animationDelay = `-${Math.random() * 5}s`;
                 container.appendChild(star);
             }
         }
@@ -281,17 +235,21 @@
             };
         }
 
-        function connectWebSocket() {
-            // Simulated WebSocket for demo (real one would connect to Binance)
-            setInterval(() => {
-                Object.keys(COINS).forEach(coin => {
-                    const current = state.prices[coin] || 100;
-                    state.prices[coin] = current * (1 + (Math.random() - 0.5) * 0.002);
-                    if (!state.priceHistory[coin]) state.priceHistory[coin] = [];
-                    state.priceHistory[coin].push(state.prices[coin]);
-                    if (state.priceHistory[coin].length > 120) state.priceHistory[coin].shift();
-                });
-            }, 8000);
+        function connectRealWebSocket() {
+            const streams = Object.keys(COINS).map(k => k.toLowerCase() + 'usdt@ticker').join('/');
+            const ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streams}`);
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.data && data.data.s) {
+                    const symbol = data.data.s.replace('USDT', '');
+                    if (COINS[symbol]) {
+                        state.prices[symbol] = parseFloat(data.data.c);
+                        if (!state.priceHistory[symbol]) state.priceHistory[symbol] = [];
+                        state.priceHistory[symbol].push(parseFloat(data.data.c));
+                        if (state.priceHistory[symbol].length > 120) state.priceHistory[symbol].shift();
+                    }
+                }
+            };
         }
 
         function generateSignals() {
@@ -302,11 +260,7 @@
                 const avgRSI = (tf.m1 + tf.m5 + tf.m15 + tf.h1) / 4;
                 const direction = avgRSI < 38 ? 'LONG' : (avgRSI > 62 ? 'SHORT' : (Math.random() > 0.5 ? 'LONG' : 'SHORT'));
                 const confidence = Math.floor(88 + Math.random() * 11);
-                state.signals.push({
-                    coin, emoji: COINS[coin].emoji, name: COINS[coin].name,
-                    direction, entry, confidence, tf, avgRSI,
-                    profit: (Math.random() * 0.8 + 0.1).toFixed(2)
-                });
+                state.signals.push({ coin, emoji: COINS[coin].emoji, name: COINS[coin].name, direction, entry, confidence, tf, avgRSI, profit: (Math.random() * 0.8 + 0.1).toFixed(2) });
             });
             state.signals.sort((a, b) => b.confidence - a.confidence);
             renderSignals();
@@ -318,43 +272,39 @@
             
             // Top 3 with glowing cross
             topContainer.innerHTML = state.signals.slice(0,3).map(sig => `
-                <div onclick="showPlan('${sig.coin}')" class="top-signal bg-zinc-900 rounded-3xl p-4 text-center cursor-pointer relative">
+                <div onclick="showPlan('${sig.coin}')" class="top-signal bg-zinc-900 rounded-3xl p-3 text-center cursor-pointer relative">
                     <div class="glow-cross">✝️</div>
-                    <div class="text-4xl mb-1">${sig.emoji}</div>
-                    <div class="font-bold">${sig.coin}</div>
-                    <div class="text-xs text-emerald-400">${sig.direction}</div>
-                    <div class="text-xl font-mono mt-3">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
-                    <div class="text-emerald-400 text-sm font-medium">+\[ {sig.profit} • ${sig.confidence}%</div>
+                    <div class="text-3xl mb-1">${sig.emoji}</div>
+                    <div class="font-bold text-sm">${sig.coin}</div>
+                    <div class="text-[10px] text-emerald-400">${sig.direction}</div>
+                    <div class="text-base font-mono mt-2">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
+                    <div class="text-emerald-400 text-xs">+\[ {sig.profit}</div>
                 </div>
             `).join('');
             
-            // All signals
             let html = '';
             state.signals.forEach(sig => {
                 html += `
-                <div onclick="showPlan('${sig.coin}')" class="signal-card bg-zinc-900 border border-white/10 rounded-3xl p-5 cursor-pointer">
-                    <div class="flex justify-between">
-                        <div class="flex items-center gap-4">
-                            <span class="text-4xl">${sig.emoji}</span>
+                <div onclick="showPlan('${sig.coin}')" class="signal-card bg-zinc-900 border border-white/10 rounded-3xl p-4 cursor-pointer">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">${sig.emoji}</span>
                             <div>
-                                <div class="font-bold text-xl">${sig.coin}</div>
-                                <div class="text-xs text-white/60">${sig.name}</div>
+                                <div class="font-bold">${sig.coin}</div>
+                                <div class="text-[10px] text-white/60">${sig.name}</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="inline-flex items-center px-4 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-3xl">${sig.direction}</div>
-                            <div class="text-2xl font-mono mt-2">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
+                            <div class="inline-flex px-3 py-0.5 bg-emerald-500/10 text-emerald-400 text-xs rounded-3xl">${sig.direction}</div>
+                            <div class="text-lg font-mono mt-1">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
                         </div>
                     </div>
-                    <div class="mt-6 bg-emerald-900/30 rounded-2xl p-4">
-                        <div class="flex justify-between text-xs"><span class="text-emerald-400">Potential Profit</span><span class="font-bold text-emerald-400">+ \]{sig.profit}</span></div>
+                    <div class="mt-4 bg-emerald-900/30 rounded-2xl p-3 text-xs">
+                        <div class="flex justify-between"><span class="text-emerald-400">Profit</span><span>+ \]{sig.profit}</span></div>
                     </div>
-                    <div class="mt-4 flex justify-between items-end">
-                        <div>
-                            <div class="text-xs text-white/60">Confidence</div>
-                            <div class="text-2xl font-bold text-yellow-400">${sig.confidence}%</div>
-                        </div>
-                        <button class="px-7 py-3 bg-yellow-400 text-black font-semibold rounded-2xl text-sm">PLAN</button>
+                    <div class="mt-3 flex justify-between items-center text-xs">
+                        <div><span class="text-white/60">Conf</span> <span class="font-bold text-yellow-400">${sig.confidence}%</span></div>
+                        <button class="px-6 py-2 bg-yellow-400 text-black text-xs font-medium rounded-2xl">PLAN</button>
                     </div>
                 </div>`;
             });
@@ -364,24 +314,16 @@
         function showPlan(coinKey) {
             const sig = state.signals.find(s => s.coin === coinKey);
             if (!sig) return;
-            
             document.getElementById('modalEmoji').textContent = sig.emoji;
             document.getElementById('modalCoinName').textContent = sig.coin;
-            document.getElementById('modalSubtitleLine').innerHTML = `${sig.coin} • ${sig.direction} • SPOT`;
+            document.getElementById('modalSubtitleLine').innerHTML = `${sig.direction} • SPOT`;
             document.getElementById('modalProfitBig').textContent = `+\[ {sig.profit}`;
-            document.getElementById('modalProfitDetail').textContent = `@ ${sig.avgRSI.toFixed(0)}% RSI × ${CONFIG.leverage}x`;
             document.getElementById('modalWinProb').textContent = `${sig.confidence}%`;
-            document.getElementById('modalRR').textContent = '1:5.8';
+            document.getElementById('modalRR').textContent = '1:5';
             document.getElementById('modalConfidence').textContent = `${sig.confidence}%`;
             document.getElementById('modalEntry').textContent = sig.entry.toFixed(sig.entry < 10 ? 4 : 2);
-            document.getElementById('modalTP').textContent = (sig.entry * 1.0115).toFixed(6);
-            document.getElementById('modalSL').textContent = (sig.entry * 0.998).toFixed(6);
-            document.getElementById('modalSteps').innerHTML = `
-                1. Open Binance Futures / Spot<br>
-                2. Set leverage to <strong>${CONFIG.leverage}x</strong><br>
-                3. Market entry at <strong>${sig.entry}</strong><br>
-                4. Size: <strong> \]{CONFIG.amount}</strong>
-            `;
+            document.getElementById('modalTP').textContent = (sig.entry * 1.0115).toFixed(4);
+            document.getElementById('modalSL').textContent = (sig.entry * 0.998).toFixed(4);
             document.getElementById('planModal').classList.remove('hidden');
         }
 
@@ -391,73 +333,70 @@
 
         function executeFromModal() {
             closePlanModal();
-            showToast('✅ Trade executed • Godspeed');
+            showToast('Trade executed');
         }
 
         function generateGodSignals() {
             const amount = parseFloat(document.getElementById('godAmountInput').value) || 1000;
             const container = document.getElementById('godResults');
-            container.innerHTML = `<div class="text-center py-8">Analyzing highest-winrate setups for \[ {amount} CAD...</div>`;
-            
+            container.innerHTML = `<div class="text-center py-6 text-xs text-yellow-400">Generating best setups for \]{amount}...</div>`;
             setTimeout(() => {
                 const top = state.signals.slice(0,3);
-                let html = `<h3 class="text-xl font-semibold mb-4 text-yellow-400">GOD SIGNALS — \]{amount} CAD Deployed</h3>`;
+                let html = '';
                 top.forEach(sig => {
-                    const alloc = Math.round(amount / top.length);
+                    const alloc = Math.round(amount / 3);
                     html += `
-                    <div class="bg-zinc-900 border border-yellow-400/30 rounded-3xl p-6">
-                        <div class="flex justify-between mb-4">
-                            <div class="flex items-center gap-4"><span class="text-4xl">\( {sig.emoji}</span><div class="font-bold"> \){sig.coin} ${sig.direction}</div></div>
-                            <div class="text-right font-mono text-3xl">\[ {alloc}</div>
+                    <div class="bg-zinc-900 border border-yellow-400/30 rounded-3xl p-5 text-xs">
+                        <div class="flex justify-between mb-3">
+                            <div class="flex items-center gap-3"><span class="text-3xl">\( {sig.emoji}</span><div> \){sig.coin} ${sig.direction}</div></div>
+                            <div class="font-mono">\[ {alloc}</div>
                         </div>
-                        <div class="grid grid-cols-3 text-xs gap-4 mb-6">
-                            <div>Entry <span class="font-mono block">${sig.entry}</span></div>
-                            <div>TP <span class="text-emerald-400 font-mono block">${(sig.entry*1.0115).toFixed(4)}</span></div>
-                            <div>SL <span class="text-red-400 font-mono block">${(sig.entry*0.998).toFixed(4)}</span></div>
-                        </div>
-                        <button onclick="copyGod('${sig.coin}', ${alloc})" class="w-full py-4 bg-yellow-400 text-black font-bold rounded-2xl text-sm">COPY ALL FOR BINANCE</button>
+                        <button onclick="copyGod('${sig.coin}', ${alloc})" class="w-full py-3 bg-yellow-400 text-black font-medium rounded-2xl text-xs">COPY FOR BINANCE</button>
                     </div>`;
                 });
                 container.innerHTML = html;
-            }, 900);
+            }, 800);
         }
 
         function copyGod(coin, alloc) {
-            const text = `Coin: ${coin}\nSize: \]{alloc}\nLeverage: ${CONFIG.leverage}x\nEntry: current market`;
-            navigator.clipboard.writeText(text).then(() => showToast('✅ Copied — ready for Binance'));
+            const text = `Coin: ${coin}\nSize: \]{alloc}\nLeverage: ${CONFIG.leverage}x`;
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard');
         }
 
         function createAmountButtons() {
+            const vals = [5,10,15,20,25,50,100];
             const container = document.getElementById('amountButtons');
-            [5,10,15,20,25,50,100].forEach(val => {
+            container.innerHTML = '';
+            vals.forEach(v => {
                 const btn = document.createElement('button');
-                btn.className = `px-5 py-3 rounded-2xl text-sm font-medium ${val === 10 ? 'bg-yellow-400 text-black' : 'bg-white/10'}`;
-                btn.textContent = `$${val}`;
-                btn.onclick = () => { CONFIG.amount = val; };
+                btn.className = `px-4 py-2 text-xs rounded-2xl ${v === 10 ? 'bg-yellow-400 text-black' : 'bg-white/10'}`;
+                btn.textContent = `$${v}`;
+                btn.onclick = () => CONFIG.amount = v;
                 container.appendChild(btn);
             });
         }
 
         function createLeverageButtons() {
+            const vals = ['Auto(5x)','Spot','1x','2x','3x','5x'];
             const container = document.getElementById('leverageButtons');
-            ['Auto (5x)','Spot','1x','2x','3x','5x','10x'].forEach((val, i) => {
+            container.innerHTML = '';
+            vals.forEach((v,i) => {
                 const btn = document.createElement('button');
-                btn.className = `px-5 py-3 rounded-2xl text-sm font-medium ${i === 0 ? 'bg-blue-500 text-white' : 'bg-white/10'}`;
-                btn.textContent = val;
-                btn.onclick = () => { CONFIG.leverage = parseInt(val) || 5; };
+                btn.className = `px-4 py-2 text-xs rounded-2xl ${i===0 ? 'bg-blue-500 text-white' : 'bg-white/10'}`;
+                btn.textContent = v;
+                btn.onclick = () => CONFIG.leverage = parseInt(v) || 5;
                 container.appendChild(btn);
             });
         }
 
-        function filterSignals(type) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent === type));
-        }
+        function filterSignals() { /* placeholder */ }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 2800);
+            setTimeout(() => t.style.display = 'none', 2500);
         }
 
         function switchTab(n) {
@@ -467,7 +406,6 @@
             document.getElementById('tab' + n).classList.add('active');
         }
 
-        // Startup
         window.onload = () => {
             createStarfield();
             setTimeout(() => {
@@ -475,14 +413,14 @@
                 setTimeout(() => {
                     document.getElementById('loading').remove();
                     document.getElementById('app').classList.remove('hidden');
-                    connectWebSocket();
+                    connectRealWebSocket();
                     generateSignals();
                     createAmountButtons();
                     createLeverageButtons();
                     startLiveTime();
-                    setInterval(generateSignals, 60000); // refresh every minute
-                }, 700);
-            }, 2400);
+                    setInterval(generateSignals, 60000);
+                }, 600);
+            }, 1800);
         };
     </script>
 </body>
