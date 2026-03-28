@@ -9,35 +9,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
-        
         :root { --gold: #facc15; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: white; overflow-x: hidden; }
-        
         .starfield { position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a2e 0%, #000 70%); overflow: hidden; z-index: -1; }
         .star { position: absolute; background: white; border-radius: 50%; animation: fly linear infinite; }
         @keyframes fly { from { transform: translateY(100vh) scale(0.5); opacity: 0.8; } to { transform: translateY(-100vh) scale(1); opacity: 0; } }
-        
-        .logo { font-family: 'Playfair Display', serif; letter-spacing: 3px; font-size: 1.75rem; }
-        
-        .signal-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .logo { font-family: 'Playfair Display', serif; letter-spacing: 3px; }
+        .signal-card { transition: all 0.25s ease; }
         .signal-card:hover { transform: translateY(-2px); }
-        
         .top-signal { position: relative; border: 2px solid #facc15; box-shadow: 0 0 20px #facc15; }
-        .glow-cross { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 24px; color: #facc15; text-shadow: 0 0 10px #facc15, 0 0 20px #facc15, 0 0 35px #facc15; z-index: 10; animation: crossGlow 1.8s ease-in-out infinite alternate; }
-        @keyframes crossGlow { from { text-shadow: 0 0 8px #facc15, 0 0 18px #facc15; } to { text-shadow: 0 0 15px #facc15, 0 0 30px #facc15, 0 0 45px #facc15; } }
-        
-        .modal { animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        
-        /* Samsung S21 optimizations - tight mobile-first */
-        .tab-button { font-size: 0.95rem; padding: 0.85rem 0.5rem; }
-        .section { padding: 0.75rem; }
-        .signal-card { padding: 1rem; }
+        .glow-cross { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 24px; color: #facc15; text-shadow: 0 0 12px #facc15, 0 0 25px #facc15; z-index: 10; animation: crossGlow 1.8s ease-in-out infinite alternate; }
+        @keyframes crossGlow { from { text-shadow: 0 0 8px #facc15, 0 0 18px #facc15; } to { text-shadow: 0 0 20px #facc15, 0 0 35px #facc15; } }
+        .modal-content { max-height: 85vh; overflow-y: auto; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- LOADING SCREEN -->
+    <!-- LOADING -->
     <div id="loading" class="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
         <div class="starfield" id="starfield"></div>
         <div class="text-center z-10">
@@ -50,129 +38,99 @@
         </div>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- APP -->
     <div id="app" class="hidden">
-        <!-- HEADER - compact for S21 -->
-        <div class="bg-black border-b border-yellow-400/30 px-3 py-3 flex items-center justify-between sticky top-0 z-50">
-            <div class="flex items-center gap-2">
+        <!-- HEADER -->
+        <div class="bg-black border-b border-yellow-400/30 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-yellow-400 rounded-2xl flex items-center justify-center text-black text-xl">👑</div>
-                <div>
-                    <div class="logo text-xl font-bold text-yellow-400 tracking-widest">DIVINETRADE</div>
-                    <div class="flex items-center gap-1.5 text-[10px]">
-                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                        <span class="text-green-400">LIVE</span>
-                        <span id="liveTime" class="text-white/70 font-mono"></span>
-                    </div>
-                </div>
+                <div class="logo text-xl font-bold text-yellow-400 tracking-widest">DIVINETRADE</div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-3xl">BULLISH</div>
-                <div class="bg-yellow-400/10 text-yellow-400 px-3 py-1 rounded-3xl font-mono text-xs flex items-center gap-1">
-                    <i class="fa-solid fa-wallet"></i> $100
-                </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-3xl">BULLISH</div>
+                <div class="bg-yellow-400/10 text-yellow-400 px-4 py-1 rounded-3xl text-xs font-mono">$100</div>
             </div>
         </div>
 
-        <!-- TABS - compact -->
+        <!-- TABS -->
         <div class="flex border-b border-white/10 bg-black/80 text-xs font-medium overflow-x-auto">
-            <button onclick="switchTab(0)" class="tab-button active flex-1 py-3 flex items-center justify-center gap-1.5" id="tab0">
-                <i class="fa-solid fa-star"></i> Signals <span class="bg-yellow-400 text-black text-[9px] px-1.5 py-px rounded">38</span>
-            </button>
-            <button onclick="switchTab(1)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5" id="tab1">
-                <i class="fa-solid fa-chart-line"></i> Positions
-            </button>
-            <button onclick="switchTab(2)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5" id="tab2">
-                <i class="fa-solid fa-clock-rotate-left"></i> History
-            </button>
-            <button onclick="switchTab(3)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1.5 text-yellow-400" id="tab3">
-                <i class="fa-solid fa-crown"></i> GOD
-            </button>
+            <button onclick="switchTab(0)" class="tab-button active flex-1 py-3 flex items-center justify-center gap-1" id="tab0">Signals</button>
+            <button onclick="switchTab(1)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1" id="tab1">Positions</button>
+            <button onclick="switchTab(2)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1" id="tab2">History</button>
+            <button onclick="switchTab(3)" class="tab-button flex-1 py-3 flex items-center justify-center gap-1 text-yellow-400" id="tab3">GOD</button>
         </div>
 
-        <!-- SIGNALS SECTION - optimized spacing -->
+        <!-- SIGNALS SECTION -->
         <div id="section0" class="section p-3">
-            <!-- Filters - tighter -->
-            <div class="flex gap-1.5 mb-4">
-                <input id="searchInput" type="text" placeholder="Search..." class="flex-1 bg-white/5 border border-white/20 rounded-2xl px-4 py-2.5 text-sm focus:outline-none">
-                <button onclick="filterSignals('ALL')" class="filter-btn active px-5 rounded-2xl text-xs font-medium">ALL</button>
-                <button onclick="filterSignals('LONG')" class="filter-btn px-5 rounded-2xl text-xs font-medium">LONG</button>
-                <button onclick="filterSignals('SHORT')" class="filter-btn px-5 rounded-2xl text-xs font-medium">SHORT</button>
-            </div>
-
-            <!-- Amount buttons - smaller, scrollable if needed -->
+            <!-- Amount -->
             <div class="mb-4">
-                <div class="text-[10px] text-white/60 mb-1.5 px-1">AMOUNT</div>
-                <div class="flex gap-1.5 flex-wrap" id="amountButtons"></div>
+                <div class="text-[10px] text-white/60 mb-1 px-1">AMOUNT</div>
+                <div class="flex gap-1 flex-wrap" id="amountButtons"></div>
             </div>
 
-            <!-- Leverage - tighter -->
+            <!-- Leverage -->
             <div class="mb-5">
-                <div class="text-[10px] text-white/60 mb-1.5 px-1">LEVERAGE</div>
-                <div class="flex gap-1.5 flex-wrap" id="leverageButtons"></div>
+                <div class="text-[10px] text-white/60 mb-1 px-1">LEVERAGE</div>
+                <div class="flex gap-1 flex-wrap" id="leverageButtons"></div>
             </div>
 
             <!-- Top 3 -->
-            <div class="mb-2 text-[10px] font-medium text-yellow-400 flex items-center gap-1.5 px-1">
+            <div class="mb-2 text-[10px] font-medium text-yellow-400 flex items-center gap-1 px-1">
                 <i class="fa-solid fa-trophy"></i> TOP 3 HIGHEST WINRATE
             </div>
             <div id="topSignals" class="grid grid-cols-3 gap-2 mb-6"></div>
 
-            <!-- All signals -->
+            <!-- Signals List -->
             <div id="signalsList" class="space-y-3"></div>
         </div>
 
-        <!-- GOD TAB - compact -->
+        <!-- GOD TAB -->
         <div id="section3" class="section p-3 hidden">
-            <div class="max-w-full">
+            <div>
                 <h2 class="text-2xl font-semibold mb-1 flex items-center gap-2"><i class="fa-solid fa-crown text-yellow-400"></i> GOD MODE</h2>
-                <p class="text-yellow-400/70 text-xs mb-4">Enter CAD → High-winrate signals</p>
-                
-                <div class="bg-white/5 border border-yellow-400/30 rounded-3xl p-5 mb-6">
+                <p class="text-yellow-400/70 text-xs mb-4">Enter CAD amount for high-winrate signals</p>
+                <div class="bg-white/5 border border-yellow-400/30 rounded-3xl p-5">
                     <label class="block text-[10px] uppercase tracking-widest mb-2 text-white/60">CAD TO DEPLOY</label>
                     <div class="flex items-center gap-3">
                         <input id="godAmountInput" type="number" value="1000" class="flex-1 bg-transparent text-4xl font-mono outline-none">
-                        <button onclick="generateGodSignals()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-bold px-8 py-3 rounded-3xl text-sm">DEPLOY</button>
+                        <button onclick="generateGodSignals()" class="bg-yellow-400 text-black font-bold px-8 py-3 rounded-3xl text-sm">DEPLOY</button>
                     </div>
                 </div>
-                
-                <div id="godResults" class="space-y-4"></div>
+                <div id="godResults" class="space-y-4 mt-6"></div>
             </div>
         </div>
     </div>
 
-    <!-- TRADING PLAN MODAL - compact for mobile -->
+    <!-- TRADING PLAN MODAL -->
     <div onclick="if(event.target.id === 'planModal') closePlanModal()" id="planModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[9999]">
-        <div class="bg-zinc-950 w-full max-w-[380px] mx-3 rounded-3xl overflow-hidden modal">
+        <div class="bg-zinc-950 w-full max-w-[360px] mx-3 rounded-3xl overflow-hidden modal-content">
             <div class="px-5 pt-4 pb-3 border-b flex justify-between">
                 <div class="flex items-center gap-3">
                     <span id="modalEmoji" class="text-3xl"></span>
                     <div>
                         <div id="modalCoinName" class="font-bold"></div>
-                        <div id="modalSubtitleLine" class="text-emerald-400 text-xs"></div>
+                        <div id="modalSubtitleLine" class="text-xs"></div>
                     </div>
                 </div>
                 <button onclick="closePlanModal()" class="text-3xl text-white/50">×</button>
             </div>
-            
-            <div class="p-5 space-y-5 text-sm">
+            <div class="p-5 space-y-5">
                 <div class="bg-emerald-900/30 rounded-2xl p-4 text-center">
                     <div class="text-xs text-emerald-400">POTENTIAL PROFIT</div>
                     <div id="modalProfitBig" class="text-4xl font-bold text-emerald-400"></div>
                 </div>
-                
                 <div class="grid grid-cols-3 gap-2 text-center text-xs">
                     <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">Win Prob</div><div id="modalWinProb" class="text-2xl font-bold text-emerald-400"></div></div>
                     <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">R:R</div><div id="modalRR" class="text-2xl font-bold text-yellow-400"></div></div>
                     <div class="bg-zinc-900 rounded-2xl p-3"><div class="text-white/60">Conf</div><div id="modalConfidence" class="text-2xl font-bold text-yellow-400"></div></div>
                 </div>
-                
                 <div class="space-y-4 text-xs">
                     <div class="flex justify-between"><div>Entry</div><div id="modalEntry" class="font-mono"></div></div>
                     <div class="flex justify-between"><div>Take Profit</div><div id="modalTP" class="font-mono text-emerald-400"></div></div>
                     <div class="flex justify-between"><div>Stop Loss</div><div id="modalSL" class="font-mono text-red-400"></div></div>
+                    <div class="flex justify-between"><div>Liquidation</div><div id="modalLiq" class="font-mono text-amber-400"></div></div>
                 </div>
             </div>
-            
             <div class="p-3 flex gap-2 border-t border-white/10">
                 <button onclick="closePlanModal()" class="flex-1 py-3 border border-white/30 rounded-2xl text-sm">Close</button>
                 <button onclick="executeFromModal()" class="flex-1 py-3 bg-yellow-400 text-black font-bold rounded-2xl text-sm">BUY NOW</button>
@@ -194,7 +152,7 @@
 
         function createStarfield() {
             const container = document.getElementById('starfield');
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 80; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 const size = Math.random() * 2.5 + 0.8;
@@ -260,7 +218,11 @@
                 const avgRSI = (tf.m1 + tf.m5 + tf.m15 + tf.h1) / 4;
                 const direction = avgRSI < 38 ? 'LONG' : (avgRSI > 62 ? 'SHORT' : (Math.random() > 0.5 ? 'LONG' : 'SHORT'));
                 const confidence = Math.floor(88 + Math.random() * 11);
-                state.signals.push({ coin, emoji: COINS[coin].emoji, name: COINS[coin].name, direction, entry, confidence, tf, avgRSI, profit: (Math.random() * 0.8 + 0.1).toFixed(2) });
+                state.signals.push({
+                    coin, emoji: COINS[coin].emoji, name: COINS[coin].name,
+                    direction, entry, confidence, tf, avgRSI,
+                    profit: (Math.random() * 0.8 + 0.1).toFixed(2)
+                });
             });
             state.signals.sort((a, b) => b.confidence - a.confidence);
             renderSignals();
@@ -276,8 +238,8 @@
                     <div class="glow-cross">✝️</div>
                     <div class="text-3xl mb-1">${sig.emoji}</div>
                     <div class="font-bold text-sm">${sig.coin}</div>
-                    <div class="text-[10px] text-emerald-400">${sig.direction}</div>
-                    <div class="text-base font-mono mt-2">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
+                    <div class="text-[10px] \( {sig.direction === 'LONG' ? 'text-emerald-400' : 'text-red-400'}"> \){sig.direction}</div>
+                    <div class="text-base font-mono mt-1">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
                     <div class="text-emerald-400 text-xs">+\[ {sig.profit}</div>
                 </div>
             `).join('');
@@ -295,7 +257,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="inline-flex px-3 py-0.5 bg-emerald-500/10 text-emerald-400 text-xs rounded-3xl">${sig.direction}</div>
+                            <div class="inline-flex px-3 py-0.5 \( {sig.direction === 'LONG' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'} text-xs rounded-3xl"> \){sig.direction}</div>
                             <div class="text-lg font-mono mt-1">${sig.entry < 10 ? sig.entry.toFixed(4) : sig.entry.toFixed(2)}</div>
                         </div>
                     </div>
@@ -324,6 +286,7 @@
             document.getElementById('modalEntry').textContent = sig.entry.toFixed(sig.entry < 10 ? 4 : 2);
             document.getElementById('modalTP').textContent = (sig.entry * 1.0115).toFixed(4);
             document.getElementById('modalSL').textContent = (sig.entry * 0.998).toFixed(4);
+            document.getElementById('modalLiq').textContent = (sig.entry * (1 - 1/CONFIG.leverage * 0.95)).toFixed(4);
             document.getElementById('planModal').classList.remove('hidden');
         }
 
@@ -361,7 +324,7 @@
         function copyGod(coin, alloc) {
             const text = `Coin: ${coin}\nSize: \]{alloc}\nLeverage: ${CONFIG.leverage}x`;
             navigator.clipboard.writeText(text);
-            showToast('Copied to clipboard');
+            showToast('Copied');
         }
 
         function createAmountButtons() {
@@ -372,25 +335,23 @@
                 const btn = document.createElement('button');
                 btn.className = `px-4 py-2 text-xs rounded-2xl ${v === 10 ? 'bg-yellow-400 text-black' : 'bg-white/10'}`;
                 btn.textContent = `$${v}`;
-                btn.onclick = () => CONFIG.amount = v;
+                btn.onclick = () => { CONFIG.amount = v; };
                 container.appendChild(btn);
             });
         }
 
         function createLeverageButtons() {
-            const vals = ['Auto(5x)','Spot','1x','2x','3x','5x'];
+            const vals = ['Auto(5x)','1x','2x','3x','5x','10x'];
             const container = document.getElementById('leverageButtons');
             container.innerHTML = '';
             vals.forEach((v,i) => {
                 const btn = document.createElement('button');
                 btn.className = `px-4 py-2 text-xs rounded-2xl ${i===0 ? 'bg-blue-500 text-white' : 'bg-white/10'}`;
                 btn.textContent = v;
-                btn.onclick = () => CONFIG.leverage = parseInt(v) || 5;
+                btn.onclick = () => { CONFIG.leverage = parseInt(v) || 5; };
                 container.appendChild(btn);
             });
         }
-
-        function filterSignals() { /* placeholder */ }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
